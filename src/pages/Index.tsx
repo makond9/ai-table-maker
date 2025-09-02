@@ -1,11 +1,91 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { Campaign } from '@/types/campaign';
+import { CampaignTable } from '@/components/CampaignTable';
+import { ChatInterface } from '@/components/ChatInterface';
+import { parseMessage, generateAIResponse } from '@/utils/aiParser';
+import { useToast } from '@/hooks/use-toast';
+import { Bot } from 'lucide-react';
 
 const Index = () => {
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const { toast } = useToast();
+
+  const handleSendMessage = (message: string) => {
+    const parsedCampaigns = parseMessage(message);
+    
+    if (parsedCampaigns.length > 0) {
+      const newCampaigns: Campaign[] = parsedCampaigns.map(partial => ({
+        id: Date.now().toString() + Math.random(),
+        trafficAccount: partial.trafficAccount!,
+        offer: partial.offer!,
+        country: partial.country!,
+        createdAt: new Date()
+      }));
+
+      setCampaigns(prev => [...prev, ...newCampaigns]);
+      
+      const response = generateAIResponse(parsedCampaigns);
+      toast({
+        title: "Кампании созданы",
+        description: response,
+      });
+    }
+  };
+
+  const handleUpdateCampaign = (id: string, updates: Partial<Campaign>) => {
+    setCampaigns(prev => 
+      prev.map(campaign => 
+        campaign.id === id ? { ...campaign, ...updates } : campaign
+      )
+    );
+    toast({
+      title: "Кампания обновлена",
+      description: "Изменения сохранены",
+    });
+  };
+
+  const handleDeleteCampaign = (id: string) => {
+    setCampaigns(prev => prev.filter(campaign => campaign.id !== id));
+    toast({
+      title: "Кампания удалена",
+      description: "Кампания была удалена из таблицы",
+    });
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-6">
+        <header className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <Bot className="h-8 w-8 text-primary" />
+            <h1 className="text-3xl font-bold">AI Менеджер кампаний</h1>
+          </div>
+          <p className="text-muted-foreground">
+            Управляйте рекламными кампаниями с помощью естественного языка
+          </p>
+        </header>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold mb-2">Таблица кампаний</h2>
+              <p className="text-sm text-muted-foreground">
+                Всего кампаний: {campaigns.length}
+              </p>
+            </div>
+            <CampaignTable
+              campaigns={campaigns}
+              onUpdateCampaign={handleUpdateCampaign}
+              onDeleteCampaign={handleDeleteCampaign}
+            />
+          </div>
+
+          <div className="lg:col-span-1">
+            <div className="h-[600px]">
+              <ChatInterface onSendMessage={handleSendMessage} />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
