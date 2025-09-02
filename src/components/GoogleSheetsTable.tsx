@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES, RK_OPTIONS, PIXEL_OPTIONS } from '@/types/campaign';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -23,6 +23,10 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
   const [editingCell, setEditingCell] = useState<SelectedCell | null>(null);
   const [editValue, setEditValue] = useState('');
   const [cellEditOpen, setCellEditOpen] = useState(false);
+  const [columnWidths, setColumnWidths] = useState<{ [key: string]: number }>({});
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState<{ row: number; col: number } | null>(null);
+  const [isResizing, setIsResizing] = useState<string | null>(null);
 
   const editableFields: (keyof Campaign)[] = ['trafficAccount', 'offer', 'country', 'rk', 'pixel'];
   
@@ -169,6 +173,70 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
     setSelectedCells([]);
   };
 
+  // Обработка drag selection
+  const handleMouseDown = (rowId: string, field: keyof Campaign, rowIndex: number, colIndex: number, event: React.MouseEvent) => {
+    if (isResizing) return;
+    
+    event.preventDefault();
+    if (window.getSelection) {
+      window.getSelection()?.removeAllRanges();
+    }
+
+    setIsDragging(true);
+    setDragStart({ row: rowIndex, col: colIndex });
+    setSelectedCells([{ rowId, field }]);
+  };
+
+  const handleMouseEnter = (rowId: string, field: keyof Campaign, rowIndex: number, colIndex: number) => {
+    if (!isDragging || !dragStart) return;
+
+    const startRow = Math.min(dragStart.row, rowIndex);
+    const endRow = Math.max(dragStart.row, rowIndex);
+    const startCol = Math.min(dragStart.col, colIndex);
+    const endCol = Math.max(dragStart.col, colIndex);
+
+    const newSelection: SelectedCell[] = [];
+    for (let r = startRow; r <= endRow; r++) {
+      for (let c = startCol; c <= endCol; c++) {
+        if (campaigns[r] && editableFields[c]) {
+          newSelection.push({
+            rowId: campaigns[r].id,
+            field: editableFields[c]
+          });
+        }
+      }
+    }
+    setSelectedCells(newSelection);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setDragStart(null);
+  };
+
+  // Обработка изменения ширины колонок
+  const handleColumnResize = (columnKey: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    setIsResizing(columnKey);
+    
+    const startX = event.clientX;
+    const startWidth = columnWidths[columnKey] || 150;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const newWidth = Math.max(80, startWidth + (e.clientX - startX));
+      setColumnWidths(prev => ({ ...prev, [columnKey]: newWidth }));
+    };
+
+    const handleMouseUpResize = () => {
+      setIsResizing(null);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUpResize);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUpResize);
+  };
+
   const columns = isLaunched 
     ? [
         { key: 'campaignName' as keyof Campaign, label: 'Название кампании', editable: false },
@@ -222,7 +290,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
       )}
 
       {/* Таблица в стиле Google Sheets */}
-      <div className="overflow-auto" ref={tableRef}>
+      <div className="overflow-auto" ref={tableRef} onMouseUp={handleMouseUp}>
         <table className="w-full border-collapse bg-white">
           {/* Заголовок */}
           <thead>
@@ -235,11 +303,20 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
               {columns.map((col, index) => (
                 <th 
                   key={col.key} 
-                  className="sticky top-0 z-10 min-w-36 h-10 bg-gradient-to-b from-gray-50 to-gray-100 border-r border-b-2 border-gray-300 text-xs font-semibold text-gray-700 px-3 hover:bg-gray-200 transition-colors duration-150 cursor-pointer"
+                  className="sticky top-0 z-10 h-10 bg-gradient-to-b from-gray-50 to-gray-100 border-r border-b-2 border-gray-300 text-xs font-semibold text-gray-700 px-3 hover:bg-gray-200 transition-colors duration-150 relative group"
+                  style={{ 
+                    width: columnWidths[col.key] || 150,
+                    minWidth: columnWidths[col.key] || 150 
+                  }}
                 >
-                  <div className="flex items-center justify-center h-full select-none">
+                  <div className="flex items-center justify-center h-full select-none cursor-pointer">
                     {col.label}
                   </div>
+                  {/* Ресайзер колонки */}
+                  <div 
+                    className="absolute right-0 top-0 w-2 h-full cursor-col-resize bg-transparent hover:bg-blue-300 transition-colors duration-150 opacity-0 group-hover:opacity-100"
+                    onMouseDown={(e) => handleColumnResize(col.key, e)}
+                  />
                 </th>
               ))}
               {!isLaunched && (
@@ -288,7 +365,13 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                             ? 'bg-blue-200 ring-2 ring-blue-500 ring-inset shadow-sm' 
                             : 'hover:bg-blue-100/60'
                         } ${isRowSelectedState ? 'bg-blue-50' : ''}`}
-                        onClick={(e) => handleCellClick(campaign.id, col.key, rowIndex, colIndex, e)}
+                        style={{ 
+                          width: columnWidths[col.key] || 150,
+                          minWidth: columnWidths[col.key] || 150 
+                        }}
+                        onMouseDown={(e) => handleMouseDown(campaign.id, col.key, rowIndex, colIndex, e)}
+                        onMouseEnter={() => handleMouseEnter(campaign.id, col.key, rowIndex, colIndex)}
+                        onClick={(e) => !isDragging && handleCellClick(campaign.id, col.key, rowIndex, colIndex, e)}
                         onDoubleClick={() => handleCellDoubleClick(campaign.id, col.key)}
                       >
                         {isEditing ? (
@@ -324,23 +407,16 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                             >
                               <Copy className="h-3 w-3" />
                             </Button>
-                            <span className="text-xs truncate text-blue-600 font-mono">
+                            <span className="text-xs truncate text-gray-700 font-mono">
                               {campaign.campaignUrl}
                             </span>
                           </div>
                         ) : col.key === 'createdAt' ? (
-                          <span className="text-gray-600 font-mono text-xs">
+                          <span className="text-gray-700 font-mono text-xs">
                             {(campaign[col.key] as Date).toLocaleDateString('ru-RU')}
                           </span>
                         ) : (
-                          <span className={`block truncate ${
-                            col.key === 'trafficAccount' ? 'font-semibold text-blue-700' :
-                            col.key === 'offer' ? 'font-medium text-green-700' :
-                            col.key === 'country' ? 'text-purple-700' :
-                            col.key === 'rk' ? 'text-orange-700 font-mono' :
-                            col.key === 'pixel' ? 'text-pink-700' :
-                            'text-gray-700'
-                          }`}>
+                          <span className="block truncate text-gray-700">
                             {String(campaign[col.key] || '-')}
                           </span>
                         )}
