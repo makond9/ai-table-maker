@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Campaign } from '@/types/campaign';
 import { CampaignTable } from '@/components/CampaignTable';
 import { ChatInterface } from '@/components/ChatInterface';
-import { AddCampaignDialog } from '@/components/AddCampaignDialog';
 import { parseMessage, generateAIResponse } from '@/utils/aiParser';
 import { useToast } from '@/hooks/use-toast';
 import { Bot } from 'lucide-react';
@@ -10,20 +9,6 @@ import { Bot } from 'lucide-react';
 const Index = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const { toast } = useToast();
-
-  const handleAddCampaign = (campaignData: Omit<Campaign, 'id' | 'createdAt'>) => {
-    const newCampaign: Campaign = {
-      ...campaignData,
-      id: Date.now().toString() + Math.random(),
-      createdAt: new Date()
-    };
-
-    setCampaigns(prev => [...prev, newCampaign]);
-    toast({
-      title: "Кампания создана",
-      description: `Добавлена кампания: ${campaignData.trafficAccount} - ${campaignData.offer} - ${campaignData.country}`,
-    });
-  };
 
   const handleSendMessage = (message: string) => {
     const parsedCampaigns = parseMessage(message);
@@ -82,20 +67,16 @@ const Index = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-xl font-semibold mb-2">Таблица кампаний</h2>
-                <p className="text-sm text-muted-foreground">
-                  Всего кампаний: {campaigns.length}
-                </p>
-              </div>
-              <AddCampaignDialog onAddCampaign={handleAddCampaign} />
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold mb-2">Таблица кампаний</h2>
+              <p className="text-sm text-muted-foreground">
+                Всего кампаний: {campaigns.length}
+              </p>
             </div>
             <CampaignTable
               campaigns={campaigns}
               onUpdateCampaign={handleUpdateCampaign}
               onDeleteCampaign={handleDeleteCampaign}
-              onAddCampaign={handleAddCampaign}
             />
           </div>
 
