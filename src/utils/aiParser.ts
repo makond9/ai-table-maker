@@ -1,5 +1,10 @@
 import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES, RK_OPTIONS, PIXEL_OPTIONS } from '@/types/campaign';
 
+export interface BulkUpdateCommand {
+  field: keyof Campaign;
+  value: string;
+}
+
 export function parseMessage(message: string): Partial<Campaign>[] {
   const lowerMessage = message.toLowerCase();
   const results: Partial<Campaign>[] = [];
@@ -110,4 +115,80 @@ export function generateAIResponse(campaigns: Partial<Campaign>[]): string {
 
   return `Создано ${campaigns.length} кампаний:
 ${campaigns.map(c => `• ${c.trafficAccount} - ${c.offer} - ${c.country}`).join('\n')}`;
+}
+
+export function parseBulkUpdateCommand(message: string): BulkUpdateCommand | null {
+  const lowerMessage = message.toLowerCase();
+  
+  // Проверяем, что это команда изменения
+  if (!lowerMessage.includes('измени')) {
+    return null;
+  }
+
+  // Определяем поле для изменения
+  if (lowerMessage.includes('рк') && lowerMessage.includes('на')) {
+    const match = message.match(/рк на (РК-\d{3})/i);
+    if (match && RK_OPTIONS.includes(match[1] as any)) {
+      return { field: 'rk', value: match[1] };
+    }
+  }
+
+  if (lowerMessage.includes('пиксель') && lowerMessage.includes('на')) {
+    const pixelMatch = PIXEL_OPTIONS.find(pixel => 
+      lowerMessage.includes(pixel.toLowerCase())
+    );
+    if (pixelMatch) {
+      return { field: 'pixel', value: pixelMatch };
+    }
+  }
+
+  if ((lowerMessage.includes('трафик') || lowerMessage.includes('аккаунт')) && lowerMessage.includes('на')) {
+    if (lowerMessage.includes('мета') || lowerMessage.includes('facebook')) {
+      return { field: 'trafficAccount', value: 'Мета' };
+    }
+    if (lowerMessage.includes('тикток') || lowerMessage.includes('tiktok')) {
+      return { field: 'trafficAccount', value: 'ТикТок' };
+    }
+  }
+
+  if (lowerMessage.includes('оффер') && lowerMessage.includes('на')) {
+    const offerMatch = OFFERS.find(offer => 
+      lowerMessage.includes(offer.toLowerCase())
+    );
+    if (offerMatch) {
+      return { field: 'offer', value: offerMatch };
+    }
+  }
+
+  if (lowerMessage.includes('стран') && lowerMessage.includes('на')) {
+    const countryMatch = COUNTRIES.find(country => 
+      lowerMessage.includes(country.toLowerCase())
+    );
+    if (countryMatch) {
+      return { field: 'country', value: countryMatch };
+    }
+    
+    // Специальные случаи для стран
+    if (lowerMessage.includes('рф') || lowerMessage.includes('россия')) {
+      return { field: 'country', value: 'Россия' };
+    }
+    if (lowerMessage.includes('сша') || lowerMessage.includes('америк')) {
+      return { field: 'country', value: 'США' };
+    }
+  }
+
+  return null;
+}
+
+export function generateBulkUpdateResponse(command: BulkUpdateCommand, count: number): string {
+  const fieldNames = {
+    'rk': 'РК',
+    'pixel': 'пиксель',
+    'trafficAccount': 'трафик-аккаунт',
+    'offer': 'оффер',
+    'country': 'страну'
+  };
+
+  const fieldName = fieldNames[command.field] || command.field;
+  return `Изменил ${fieldName} на "${command.value}" для ${count} кампаний`;
 }

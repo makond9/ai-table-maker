@@ -22,7 +22,7 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns }
   const [mainMessages, setMainMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Привет! Я помогу вам создать кампании. Просто опишите что нужно, например: "Создай кампанию для Меты с оффером Финансы для России"',
+      text: 'Привет! Я помогу вам создать кампании. Примеры команд:\n• "Создай кампанию для Меты с оффером Финансы для России"\n• "Измени РК на РК-005"\n• "Измени пиксель на Google Analytics"',
       isUser: false,
       timestamp: new Date()
     }

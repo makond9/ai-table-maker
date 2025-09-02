@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Campaign } from '@/types/campaign';
 import { CampaignTable } from '@/components/CampaignTable';
 import { ChatInterface } from '@/components/ChatInterface';
-import { parseMessage, generateAIResponse } from '@/utils/aiParser';
+import { parseMessage, generateAIResponse, parseBulkUpdateCommand, generateBulkUpdateResponse } from '@/utils/aiParser';
 import { useToast } from '@/hooks/use-toast';
 import { Bot } from 'lucide-react';
 
@@ -12,6 +12,27 @@ const Index = () => {
   const { toast } = useToast();
 
   const handleSendMessage = (message: string) => {
+    // Проверяем, это команда массового изменения?
+    const bulkUpdateCommand = parseBulkUpdateCommand(message);
+    
+    if (bulkUpdateCommand) {
+      // Массовое обновление всех кампаний
+      setCampaigns(prev => 
+        prev.map(campaign => ({
+          ...campaign,
+          [bulkUpdateCommand.field]: bulkUpdateCommand.value
+        }))
+      );
+      
+      const response = generateBulkUpdateResponse(bulkUpdateCommand, campaigns.length);
+      toast({
+        title: "Кампании обновлены",
+        description: response,
+      });
+      return;
+    }
+
+    // Обычное создание кампаний
     const parsedCampaigns = parseMessage(message);
     
     if (parsedCampaigns.length > 0) {
