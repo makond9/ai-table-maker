@@ -9,6 +9,7 @@ import { Bot } from 'lucide-react';
 const Index = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [isLaunched, setIsLaunched] = useState(false);
+  const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
   const { toast } = useToast();
 
   const handleSendMessage = (message: string) => {
@@ -76,6 +77,24 @@ const Index = () => {
     });
   };
 
+  const handleBulkUpdate = (updates: Partial<Campaign>) => {
+    setCampaigns(prev => 
+      prev.map(campaign => 
+        selectedCampaigns.includes(campaign.id) 
+          ? { ...campaign, ...updates }
+          : campaign
+      )
+    );
+    
+    // Очищаем выбор после обновления
+    setSelectedCampaigns([]);
+    
+    toast({
+      title: "Кампании обновлены",
+      description: `Обновлено ${selectedCampaigns.length} кампаний`,
+    });
+  };
+
   const handleLaunchCampaigns = () => {
     const launchedCampaigns = campaigns.map(campaign => ({
       ...campaign,
@@ -118,6 +137,9 @@ const Index = () => {
               onUpdateCampaign={handleUpdateCampaign}
               onDeleteCampaign={handleDeleteCampaign}
               isLaunched={isLaunched}
+              selectedCampaigns={selectedCampaigns}
+              onSelectionChange={setSelectedCampaigns}
+              onBulkUpdate={handleBulkUpdate}
             />
           </div>
 

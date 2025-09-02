@@ -3,18 +3,24 @@ import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES, RK_OPTIONS, PIXEL_OPTION
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Edit2, Save, X, Copy } from 'lucide-react';
+import { Trash2, Edit2, Save, X, Copy, Edit } from 'lucide-react';
+import { BulkEditDialog } from './BulkEditDialog';
 
 interface CampaignTableProps {
   campaigns: Campaign[];
   onUpdateCampaign: (id: string, updates: Partial<Campaign>) => void;
   onDeleteCampaign: (id: string) => void;
   isLaunched?: boolean;
+  selectedCampaigns: string[];
+  onSelectionChange: (selectedIds: string[]) => void;
+  onBulkUpdate: (updates: Partial<Campaign>) => void;
 }
 
-export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign, isLaunched = false }: CampaignTableProps) {
+export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign, isLaunched = false, selectedCampaigns, onSelectionChange, onBulkUpdate }: CampaignTableProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Campaign>>({});
+  const [bulkEditOpen, setBulkEditOpen] = useState(false);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number>(-1);
 
   const startEdit = (campaign: Campaign) => {
     setEditingId(campaign.id);
@@ -40,8 +46,68 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign, i
     setEditForm({});
   };
 
+  const handleRowClick = (campaign: Campaign, index: number, event: React.MouseEvent) => {
+    // Предотвращаем выбор если кликнули на кнопку редактирования или удаления
+    if ((event.target as HTMLElement).closest('button')) {
+      return;
+    }
+
+    const campaignId = campaign.id;
+    
+    if (event.ctrlKey || event.metaKey) {
+      // Ctrl+клик: добавить/убрать из выбора
+      const newSelection = selectedCampaigns.includes(campaignId)
+        ? selectedCampaigns.filter(id => id !== campaignId)
+        : [...selectedCampaigns, campaignId];
+      onSelectionChange(newSelection);
+      setLastSelectedIndex(index);
+    } else if (event.shiftKey && lastSelectedIndex !== -1) {
+      // Shift+клик: выбрать диапазон
+      const startIndex = Math.min(lastSelectedIndex, index);
+      const endIndex = Math.max(lastSelectedIndex, index);
+      const rangeIds = campaigns.slice(startIndex, endIndex + 1).map(c => c.id);
+      
+      const newSelection = [...new Set([...selectedCampaigns, ...rangeIds])];
+      onSelectionChange(newSelection);
+    } else {
+      // Обычный клик: выбрать только эту кампанию
+      onSelectionChange([campaignId]);
+      setLastSelectedIndex(index);
+    }
+  };
+
+  const getSelectedCampaigns = () => {
+    return campaigns.filter(campaign => selectedCampaigns.includes(campaign.id));
+  };
+
   return (
     <div className="rounded-lg border border-table-border bg-card overflow-hidden">
+      {/* Панель массового редактирования */}
+      {selectedCampaigns.length > 0 && !isLaunched && (
+        <div className="bg-blue-50 dark:bg-blue-950 border-b border-table-border p-4 flex items-center justify-between">
+          <span className="text-sm font-medium">
+            Выбрано кампаний: {selectedCampaigns.length}
+          </span>
+          <div className="flex gap-2">
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={() => setBulkEditOpen(true)}
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Редактировать
+            </Button>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={() => onSelectionChange([])}
+            >
+              Отменить выбор
+            </Button>
+          </div>
+        </div>
+      )}
+
       {isLaunched ? (
         // Режим запущенных кампаний - только названия и ссылки
         <>
@@ -52,10 +118,11 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign, i
             </div>
           </div>
           <div className="divide-y divide-table-border">
-            {campaigns.map((campaign) => (
+            {campaigns.map((campaign, index) => (
               <div
                 key={campaign.id}
                 className="grid grid-cols-2 gap-4 p-4 hover:bg-table-row-hover transition-colors"
+                onClick={(e) => handleRowClick(campaign, index, e)}
               >
                 <div className="flex items-center">
                   <span className="font-medium">{campaign.campaignName}</span>
@@ -93,11 +160,16 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign, i
           </div>
 
           <div className="divide-y divide-table-border">
-            {campaigns.map((campaign) => (
-              <div
-                key={campaign.id}
-                className="grid grid-cols-7 gap-4 p-4 hover:bg-table-row-hover transition-colors"
-              >
+            {campaigns.map((campaign, index) => {
+              const isSelected = selectedCampaigns.includes(campaign.id);
+              return (
+                <div
+                  key={campaign.id}
+                  className={`grid grid-cols-7 gap-4 p-4 hover:bg-table-row-hover transition-colors cursor-pointer ${
+                    isSelected ? 'bg-blue-50 dark:bg-blue-950 border-l-4 border-l-blue-500' : ''
+                  }`}
+                  onClick={(e) => handleRowClick(campaign, index, e)}
+                >
                 <div className="flex items-center">
                   {editingId === campaign.id ? (
                     <Select
@@ -239,8 +311,9 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign, i
                     </>
                   )}
                 </div>
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         </>
       )}
@@ -250,6 +323,13 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign, i
           <p>Нет кампаний. Начните добавлять их через чат!</p>
         </div>
       )}
+
+      <BulkEditDialog
+        open={bulkEditOpen}
+        onOpenChange={setBulkEditOpen}
+        selectedCampaigns={getSelectedCampaigns()}
+        onBulkUpdate={onBulkUpdate}
+      />
     </div>
   );
 }
