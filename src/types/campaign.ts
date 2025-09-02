@@ -5,6 +5,8 @@ export interface Campaign {
   country: string;
   rk: string;
   pixel: string;
+  campaignName?: string;
+  campaignUrl?: string;
   createdAt: Date;
 }
 

@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Send, Bot, User, Settings } from 'lucide-react';
+import { Send, Bot, User, Settings, Play } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -14,9 +14,11 @@ interface Message {
 
 interface ChatInterfaceProps {
   onSendMessage: (message: string) => void;
+  onLaunchCampaigns: () => void;
+  hasCampaigns: boolean;
 }
 
-export function ChatInterface({ onSendMessage }: ChatInterfaceProps) {
+export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns }: ChatInterfaceProps) {
   const [mainMessages, setMainMessages] = useState<Message[]>([
     {
       id: '1',
@@ -154,6 +156,17 @@ export function ChatInterface({ onSendMessage }: ChatInterfaceProps) {
         </TabsContent>
 
         <div className="p-4 border-t border-border">
+          {hasCampaigns && (
+            <div className="mb-3">
+              <Button 
+                onClick={onLaunchCampaigns} 
+                className="w-full bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                Запуск кампаний
+              </Button>
+            </div>
+          )}
           <div className="flex gap-2">
             <Input
               value={inputValue}

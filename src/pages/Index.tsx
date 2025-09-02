@@ -54,6 +54,19 @@ const Index = () => {
     });
   };
 
+  const handleLaunchCampaigns = () => {
+    setCampaigns(prev => prev.map(campaign => ({
+      ...campaign,
+      campaignName: `${campaign.trafficAccount}_${campaign.offer}_${campaign.country}_${campaign.rk}`,
+      campaignUrl: `https://campaign.tracker.com/c/${campaign.id}`
+    })));
+    
+    toast({
+      title: "Кампании запущены",
+      description: "Названия и ссылки кампаний созданы",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
@@ -84,7 +97,11 @@ const Index = () => {
 
           <div className="lg:col-span-1">
             <div className="h-[600px]">
-              <ChatInterface onSendMessage={handleSendMessage} />
+              <ChatInterface 
+                onSendMessage={handleSendMessage} 
+                onLaunchCampaigns={handleLaunchCampaigns}
+                hasCampaigns={campaigns.length > 0}
+              />
             </div>
           </div>
         </div>

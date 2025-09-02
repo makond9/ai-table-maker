@@ -3,7 +3,7 @@ import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES, RK_OPTIONS, PIXEL_OPTION
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Edit2, Save, X } from 'lucide-react';
+import { Trash2, Edit2, Save, X, Copy } from 'lucide-react';
 
 interface CampaignTableProps {
   campaigns: Campaign[];
@@ -42,12 +42,14 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign }:
   return (
     <div className="rounded-lg border border-table-border bg-card overflow-hidden">
       <div className="bg-table-header border-b border-table-border">
-        <div className="grid grid-cols-7 gap-4 p-4 font-medium text-sm text-muted-foreground">
+        <div className="grid grid-cols-9 gap-4 p-4 font-medium text-sm text-muted-foreground">
           <div>Трафик аккаунт</div>
           <div>Оффер</div>
           <div>Страна</div>
           <div>РК</div>
           <div>Пиксель</div>
+          <div>Название кампании</div>
+          <div>Ссылка</div>
           <div>Создано</div>
           <div>Действия</div>
         </div>
@@ -57,7 +59,7 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign }:
         {campaigns.map((campaign) => (
           <div
             key={campaign.id}
-            className="grid grid-cols-7 gap-4 p-4 hover:bg-table-row-hover transition-colors"
+            className="grid grid-cols-9 gap-4 p-4 hover:bg-table-row-hover transition-colors"
           >
             <div className="flex items-center">
               {editingId === campaign.id ? (
@@ -168,6 +170,26 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign }:
                 </Select>
               ) : (
                 <span>{campaign.pixel}</span>
+              )}
+            </div>
+
+            <div className="flex items-center">
+              <span>{campaign.campaignName || '-'}</span>
+            </div>
+
+            <div className="flex items-center">
+              {campaign.campaignUrl ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(campaign.campaignUrl!);
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              ) : (
+                '-'
               )}
             </div>
 
