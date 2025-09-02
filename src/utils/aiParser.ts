@@ -1,4 +1,4 @@
-import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES } from '@/types/campaign';
+import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES, RK_OPTIONS, PIXEL_OPTIONS } from '@/types/campaign';
 
 export function parseMessage(message: string): Partial<Campaign>[] {
   const lowerMessage = message.toLowerCase();
@@ -88,7 +88,9 @@ export function parseMessage(message: string): Partial<Campaign>[] {
       results.push({
         trafficAccount,
         offer,
-        country
+        country,
+        rk: RK_OPTIONS[0], // По умолчанию первый РК
+        pixel: PIXEL_OPTIONS[0] // По умолчанию первый пиксель
       });
     });
   });

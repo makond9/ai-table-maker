@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES } from '@/types/campaign';
+import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES, RK_OPTIONS, PIXEL_OPTIONS } from '@/types/campaign';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -20,7 +20,9 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign }:
     setEditForm({
       trafficAccount: campaign.trafficAccount,
       offer: campaign.offer,
-      country: campaign.country
+      country: campaign.country,
+      rk: campaign.rk,
+      pixel: campaign.pixel
     });
   };
 
@@ -40,10 +42,12 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign }:
   return (
     <div className="rounded-lg border border-table-border bg-card overflow-hidden">
       <div className="bg-table-header border-b border-table-border">
-        <div className="grid grid-cols-5 gap-4 p-4 font-medium text-sm text-muted-foreground">
+        <div className="grid grid-cols-7 gap-4 p-4 font-medium text-sm text-muted-foreground">
           <div>Трафик аккаунт</div>
           <div>Оффер</div>
           <div>Страна</div>
+          <div>РК</div>
+          <div>Пиксель</div>
           <div>Создано</div>
           <div>Действия</div>
         </div>
@@ -53,7 +57,7 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign }:
         {campaigns.map((campaign) => (
           <div
             key={campaign.id}
-            className="grid grid-cols-5 gap-4 p-4 hover:bg-table-row-hover transition-colors"
+            className="grid grid-cols-7 gap-4 p-4 hover:bg-table-row-hover transition-colors"
           >
             <div className="flex items-center">
               {editingId === campaign.id ? (
@@ -120,6 +124,50 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign }:
                 </Select>
               ) : (
                 <span>{campaign.country}</span>
+              )}
+            </div>
+
+            <div className="flex items-center">
+              {editingId === campaign.id ? (
+                <Select
+                  value={editForm.rk}
+                  onValueChange={(value) => setEditForm({ ...editForm, rk: value })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {RK_OPTIONS.map((rk) => (
+                      <SelectItem key={rk} value={rk}>
+                        {rk}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <span>{campaign.rk}</span>
+              )}
+            </div>
+
+            <div className="flex items-center">
+              {editingId === campaign.id ? (
+                <Select
+                  value={editForm.pixel}
+                  onValueChange={(value) => setEditForm({ ...editForm, pixel: value })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PIXEL_OPTIONS.map((pixel) => (
+                      <SelectItem key={pixel} value={pixel}>
+                        {pixel}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <span>{campaign.pixel}</span>
               )}
             </div>
 

@@ -19,6 +19,8 @@ const Index = () => {
         trafficAccount: partial.trafficAccount!,
         offer: partial.offer!,
         country: partial.country!,
+        rk: partial.rk || 'РК-001',
+        pixel: partial.pixel || 'Facebook Pixel',
         createdAt: new Date()
       }));
 
