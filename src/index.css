@@ -44,12 +44,12 @@ All colors MUST be HSL.
     --chat-ai-text: 224 15% 20%;
 
     /* Professional Table Colors - Airtable inspired */
-    --table-header: 220 14% 96%;
-    --table-header-border: 220 14% 88%;
-    --table-row-hover: 217 100% 99%;
-    --table-row-selected: 217 100% 97%;
-    --table-border: 220 14% 92%;
-    --table-cell-selected: 217 100% 93%;
+    --table-header: 240 6% 90%;
+    --table-header-border: 220 14% 85%;
+    --table-row-hover: 240 100% 98%;
+    --table-row-selected: 217 85% 94%;
+    --table-border: 220 14% 88%;
+    --table-cell-selected: 217 85% 90%;
     --table-resize-handle: 217 91% 60%;
 
     --radius: 0.5rem;

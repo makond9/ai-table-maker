@@ -252,10 +252,10 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
       ];
 
   return (
-    <div className="rounded-lg border border-table-border bg-card overflow-hidden shadow-sm">{/*Professional container*/}
+    <div className="rounded-xl border border-table-border bg-card overflow-hidden shadow-lg">{/*Professional container*/}
       {/* Панель инструментов */}
       {(selectedCells.length > 0 || selectedRows.length > 0) && !isLaunched && (
-        <div className="bg-secondary border-b border-table-border px-4 py-3">
+        <div className="bg-table-header border-b border-table-header-border px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="text-sm font-medium text-foreground flex items-center gap-2">
               <div className="w-2 h-2 bg-primary rounded-full"></div>
@@ -295,21 +295,21 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
           {/* Заголовок */}
           <thead>
             <tr>
-              <th className="sticky top-0 left-0 z-20 w-12 h-11 bg-table-header border-r border-b border-table-header-border text-xs font-medium text-muted-foreground">
-                <div className="w-full h-full flex items-center justify-center hover:bg-accent transition-colors cursor-pointer select-none">
-                  <div className="w-3 h-3 border border-border rounded-sm"></div>
+              <th className="sticky top-0 left-0 z-20 w-14 h-12 bg-table-header border-r-2 border-b-2 border-table-header-border text-xs font-semibold text-muted-foreground">
+                <div className="w-full h-full flex items-center justify-center hover:bg-table-row-hover transition-colors cursor-pointer select-none">
+                  <div className="w-4 h-4 border-2 border-border rounded"></div>
                 </div>
               </th>
               {columns.map((col, index) => (
                 <th 
                   key={col.key} 
-                  className="sticky top-0 z-10 h-11 bg-table-header border-r border-b border-table-header-border text-xs font-medium text-muted-foreground px-3 hover:bg-accent transition-colors relative group"
+                  className="sticky top-0 z-10 h-12 bg-table-header border-r-2 border-b-2 border-table-header-border text-sm font-semibold text-foreground px-4 hover:bg-table-row-hover transition-colors relative group"
                   style={{ 
                     width: columnWidths[col.key] || 150,
                     minWidth: columnWidths[col.key] || 150 
                   }}
                 >
-                  <div className="flex items-center justify-start h-full select-none cursor-pointer truncate">
+                  <div className="flex items-center justify-start h-full select-none cursor-pointer truncate font-medium">
                     {col.label}
                   </div>
                   {/* Ресайзер колонки */}
@@ -320,7 +320,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                 </th>
               ))}
               {!isLaunched && (
-                <th className="sticky top-0 z-10 w-24 h-11 bg-table-header border-b border-table-header-border text-xs font-medium text-muted-foreground select-none">
+                <th className="sticky top-0 z-10 w-28 h-12 bg-table-header border-b-2 border-table-header-border text-sm font-semibold text-foreground select-none">
                   <div className="flex items-center justify-center h-full">
                     Действия
                   </div>
@@ -342,7 +342,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                 >
                   {/* Заголовок строки */}
                   <td 
-                    className={`sticky left-0 z-10 w-12 h-11 bg-table-header border-r border-b border-table-border text-xs text-center cursor-pointer font-medium text-muted-foreground hover:bg-accent transition-colors select-none ${
+                    className={`sticky left-0 z-10 w-14 h-12 bg-table-header border-r-2 border-b border-table-border text-sm text-center cursor-pointer font-semibold text-muted-foreground hover:bg-table-row-hover transition-colors select-none ${
                       isRowSelectedState ? 'bg-table-row-selected' : ''
                     }`}
                     onClick={(e) => handleRowHeaderClick(campaign.id, rowIndex, e)}
@@ -360,9 +360,9 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                     return (
                       <td 
                         key={col.key}
-                        className={`relative h-11 border-r border-b border-table-border px-3 text-sm cursor-cell select-none transition-colors ${
+                        className={`relative h-12 border-r border-b border-table-border px-4 text-sm cursor-cell select-none transition-all duration-150 font-medium ${
                           isSelected 
-                            ? 'bg-table-cell-selected ring-1 ring-inset ring-primary' 
+                            ? 'bg-table-cell-selected ring-2 ring-inset ring-primary shadow-inner' 
                             : 'hover:bg-table-row-hover'
                         } ${isRowSelectedState ? 'bg-table-row-selected' : ''}`}
                         style={{ 
