@@ -3,6 +3,8 @@ import { Campaign } from '@/types/campaign';
 import { GoogleSheetsTable } from '@/components/GoogleSheetsTable';
 import { ChatInterface } from '@/components/ChatInterface';
 import { parseMessage, generateAIResponse, parseBulkUpdateCommand, generateBulkUpdateResponse } from '@/utils/aiParser';
+import { aiService } from '@/services/aiService';
+import { toast } from 'sonner';
 import { useToast } from '@/hooks/use-toast';
 import { Bot } from 'lucide-react';
 
@@ -10,6 +12,52 @@ const Index = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [isLaunched, setIsLaunched] = useState(false);
   const { toast } = useToast();
+
+  const handleAIParseMessage = async (message: string) => {
+    try {
+      const result = await aiService.parseCommandWithAI(message);
+      
+      if (result.campaigns && result.campaigns.length > 0) {
+        // Создание новых кампаний
+        const newCampaigns = result.campaigns.map(campaignData => ({
+          id: crypto.randomUUID(),
+          createdAt: new Date(),
+          ...campaignData
+        })) as Campaign[];
+        
+        setCampaigns(prev => [...prev, ...newCampaigns]);
+        toast({
+          title: "Кампании созданы",
+          description: result.message,
+        });
+        
+      } else if (result.bulkUpdate) {
+        // Массовое обновление
+        setCampaigns(prev => 
+          prev.map(campaign => ({
+            ...campaign,
+            [result.bulkUpdate!.field]: result.bulkUpdate!.value
+          }))
+        );
+        toast({
+          title: "Кампании обновлены",
+          description: result.message,
+        });
+        
+      } else {
+        // Ошибка или неопознанная команда
+        toast({
+          title: "Ошибка",
+          description: result.message,
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('AI parsing error:', error);
+      // Fallback на локальный парсинг
+      handleSendMessage(message);
+    }
+  };
 
   const handleSendMessage = (message: string) => {
     // Проверяем, это команда массового изменения?
@@ -123,11 +171,12 @@ const Index = () => {
 
           <div className="lg:col-span-1">
             <div className="h-[600px]">
-              <ChatInterface 
-                onSendMessage={handleSendMessage} 
-                onLaunchCampaigns={handleLaunchCampaigns}
-                hasCampaigns={campaigns.length > 0}
-              />
+          <ChatInterface 
+            onSendMessage={handleSendMessage}
+            onLaunchCampaigns={handleLaunchCampaigns}
+            hasCampaigns={campaigns.length > 0}
+            onAIParseMessage={handleAIParseMessage}
+          />
             </div>
           </div>
         </div>

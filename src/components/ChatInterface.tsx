@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Send, Bot, User, Settings, Play, Cog } from 'lucide-react';
+import { Send, Bot, User, Settings, Play, Cog, Sparkles, Zap } from 'lucide-react';
 import { CommandManager } from './CommandManager';
+import { ApiKeyDialog } from './ApiKeyDialog';
+import { aiService } from '@/services/aiService';
 
 interface Message {
   id: string;
@@ -17,13 +19,14 @@ interface ChatInterfaceProps {
   onSendMessage: (message: string) => void;
   onLaunchCampaigns: () => void;
   hasCampaigns: boolean;
+  onAIParseMessage?: (message: string) => Promise<void>;
 }
 
-export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns }: ChatInterfaceProps) {
+export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns, onAIParseMessage }: ChatInterfaceProps) {
   const [mainMessages, setMainMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Привет! Я помогу вам создать кампании. Примеры команд:\n• "Создай кампанию для Меты с оффером Финансы для России"\n• "Измени РК на РК-005"\n• "Измени пиксель на Google Analytics"',
+      text: 'Привет! Я помогу создать кампании. Примеры команд:\n• "Создай кампанию для Меты с оффером Финансы для России"\n• "Измени РК на РК-005"\n\n💡 Подключите OpenAI API для улучшенного понимания команд!',
       isUser: false,
       timestamp: new Date()
     }
@@ -39,9 +42,16 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns }
   const [inputValue, setInputValue] = useState('');
   const [activeTab, setActiveTab] = useState('main');
   const [isCommandManagerOpen, setIsCommandManagerOpen] = useState(false);
+  const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false);
+  const [isAiEnabled, setIsAiEnabled] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
+  useEffect(() => {
+    setIsAiEnabled(aiService.hasApiKey());
+  }, []);
+
+  const handleSend = async () => {
+    if (!inputValue.trim() || isProcessing) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -52,22 +62,50 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns }
 
     if (activeTab === 'main') {
       setMainMessages(prev => [...prev, userMessage]);
-      onSendMessage(inputValue);
-
-      // Simulate AI response
-      setTimeout(() => {
-        const aiResponse: Message = {
-          id: (Date.now() + 1).toString(),
-          text: 'Понял! Создаю кампанию...',
-          isUser: false,
-          timestamp: new Date()
-        };
-        setMainMessages(prev => [...prev, aiResponse]);
-      }, 500);
+      
+      if (isAiEnabled && onAIParseMessage) {
+        setIsProcessing(true);
+        try {
+          await onAIParseMessage(inputValue);
+          
+          // AI response будет добавлен через onAIParseMessage
+          setTimeout(() => {
+            const aiResponse: Message = {
+              id: (Date.now() + 1).toString(),
+              text: '✨ Команда обработана с помощью AI',
+              isUser: false,
+              timestamp: new Date()
+            };
+            setMainMessages(prev => [...prev, aiResponse]);
+          }, 500);
+        } catch (error) {
+          const errorResponse: Message = {
+            id: (Date.now() + 1).toString(),
+            text: `Ошибка AI: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
+            isUser: false,
+            timestamp: new Date()
+          };
+          setMainMessages(prev => [...prev, errorResponse]);
+        } finally {
+          setIsProcessing(false);
+        }
+      } else {
+        // Используем обычную обработку
+        onSendMessage(inputValue);
+        
+        setTimeout(() => {
+          const aiResponse: Message = {
+            id: (Date.now() + 1).toString(),
+            text: 'Понял! Создаю кампанию...',
+            isUser: false,
+            timestamp: new Date()
+          };
+          setMainMessages(prev => [...prev, aiResponse]);
+        }, 500);
+      }
     } else {
       setAdminMessages(prev => [...prev, userMessage]);
       
-      // Simulate admin AI response
       setTimeout(() => {
         const aiResponse: Message = {
           id: (Date.now() + 1).toString(),
@@ -80,6 +118,20 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns }
     }
 
     setInputValue('');
+  };
+
+  const handleApiKeySet = (apiKey: string) => {
+    aiService.setApiKey(apiKey);
+    setIsAiEnabled(true);
+    
+    // Добавляем сообщение об успешном подключении
+    const successMessage: Message = {
+      id: Date.now().toString(),
+      text: '🚀 AI подключен! Теперь я буду понимать ваши команды намного лучше.',
+      isUser: false,
+      timestamp: new Date()
+    };
+    setMainMessages(prev => [...prev, successMessage]);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -133,15 +185,29 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns }
           <h3 className="font-medium flex items-center gap-2">
             <Bot className="h-5 w-5 text-primary" />
             AI Ассистент кампаний
+            {isAiEnabled && <Zap className="h-4 w-4 text-green-500" />}
           </h3>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => setIsCommandManagerOpen(true)}
-          >
-            <Cog className="w-4 h-4 mr-2" />
-            Команды
-          </Button>
+          <div className="flex gap-2">
+            {!isAiEnabled && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setIsApiKeyDialogOpen(true)}
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Подключить AI
+              </Button>
+            )}
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setIsCommandManagerOpen(true)}
+            >
+              <Cog className="w-4 h-4 mr-2" />
+              Команды
+            </Button>
+          </div>
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -186,9 +252,10 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns }
               onKeyPress={handleKeyPress}
               placeholder={activeTab === 'main' ? "Опишите кампанию которую хотите создать..." : "Введите админ команду..."}
               className="flex-1"
+              disabled={isProcessing}
             />
-            <Button onClick={handleSend} size="icon">
-              <Send className="h-4 w-4" />
+            <Button onClick={handleSend} size="icon" disabled={isProcessing}>
+              <Send className={`h-4 w-4 ${isProcessing ? 'animate-pulse' : ''}`} />
             </Button>
           </div>
         </div>
@@ -197,6 +264,12 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns }
       <CommandManager 
         isOpen={isCommandManagerOpen}
         onClose={() => setIsCommandManagerOpen(false)}
+      />
+      
+      <ApiKeyDialog
+        isOpen={isApiKeyDialogOpen}
+        onClose={() => setIsApiKeyDialogOpen(false)}
+        onApiKeySet={handleApiKeySet}
       />
     </div>
   );
