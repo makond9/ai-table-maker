@@ -1,19 +1,25 @@
 import { useState } from 'react';
 import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES } from '@/types/campaign';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Edit2, Save, X } from 'lucide-react';
+import { Trash2, Edit2, Save, X, Plus } from 'lucide-react';
 
 interface CampaignTableProps {
   campaigns: Campaign[];
   onUpdateCampaign: (id: string, updates: Partial<Campaign>) => void;
   onDeleteCampaign: (id: string) => void;
+  onAddCampaign: (campaign: Omit<Campaign, 'id' | 'createdAt'>) => void;
 }
 
-export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign }: CampaignTableProps) {
+export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign, onAddCampaign }: CampaignTableProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Campaign>>({});
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
+  const [newCampaignForm, setNewCampaignForm] = useState<Omit<Campaign, 'id' | 'createdAt'>>({
+    trafficAccount: 'Мета',
+    offer: 'Финансы',
+    country: 'Россия'
+  });
 
   const startEdit = (campaign: Campaign) => {
     setEditingId(campaign.id);
@@ -35,6 +41,28 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign }:
   const cancelEdit = () => {
     setEditingId(null);
     setEditForm({});
+  };
+
+  const startCreatingNew = () => {
+    // Если есть кампании, используем значения из последней
+    if (campaigns.length > 0) {
+      const lastCampaign = campaigns[campaigns.length - 1];
+      setNewCampaignForm({
+        trafficAccount: lastCampaign.trafficAccount,
+        offer: lastCampaign.offer,
+        country: lastCampaign.country
+      });
+    }
+    setIsCreatingNew(true);
+  };
+
+  const saveNewCampaign = () => {
+    onAddCampaign(newCampaignForm);
+    setIsCreatingNew(false);
+  };
+
+  const cancelNewCampaign = () => {
+    setIsCreatingNew(false);
   };
 
   return (
@@ -156,10 +184,100 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign }:
         ))}
       </div>
 
-      {campaigns.length === 0 && (
+      {campaigns.length === 0 && !isCreatingNew && (
         <div className="p-8 text-center text-muted-foreground">
           <p>Нет кампаний. Начните добавлять их через чат!</p>
         </div>
+      )}
+
+      {/* Строка для создания новой кампании */}
+      {campaigns.length > 0 && (
+        <>
+          {isCreatingNew ? (
+            <div className="grid grid-cols-5 gap-4 p-4 bg-muted/30 border-2 border-dashed border-primary/30">
+              <div className="flex items-center">
+                <Select
+                  value={newCampaignForm.trafficAccount}
+                  onValueChange={(value) =>
+                    setNewCampaignForm({ ...newCampaignForm, trafficAccount: value as Campaign['trafficAccount'] })
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TRAFFIC_ACCOUNTS.map((account) => (
+                      <SelectItem key={account} value={account}>
+                        {account}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center">
+                <Select
+                  value={newCampaignForm.offer}
+                  onValueChange={(value) => setNewCampaignForm({ ...newCampaignForm, offer: value })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {OFFERS.map((offer) => (
+                      <SelectItem key={offer} value={offer}>
+                        {offer}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center">
+                <Select
+                  value={newCampaignForm.country}
+                  onValueChange={(value) => setNewCampaignForm({ ...newCampaignForm, country: value })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COUNTRIES.map((country) => (
+                      <SelectItem key={country} value={country}>
+                        {country}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center text-sm text-muted-foreground">
+                Новая кампания
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="default" onClick={saveNewCampaign}>
+                  <Save className="h-4 w-4" />
+                </Button>
+                <Button size="sm" variant="outline" onClick={cancelNewCampaign}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div 
+              className="grid grid-cols-5 gap-4 p-4 hover:bg-muted/50 transition-colors cursor-pointer border-2 border-dashed border-muted-foreground/20 hover:border-primary/50"
+              onClick={startCreatingNew}
+            >
+              <div className="flex items-center justify-center col-span-5">
+                <div className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+                  <Plus className="h-4 w-4" />
+                  <span className="text-sm">Добавить новую кампанию</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

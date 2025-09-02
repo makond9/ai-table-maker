@@ -95,6 +95,7 @@ const Index = () => {
               campaigns={campaigns}
               onUpdateCampaign={handleUpdateCampaign}
               onDeleteCampaign={handleDeleteCampaign}
+              onAddCampaign={handleAddCampaign}
             />
           </div>
 
