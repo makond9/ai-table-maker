@@ -252,21 +252,21 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
       ];
 
   return (
-    <div className="rounded-xl border-2 border-gray-200 bg-white overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <div className="rounded-lg border border-table-border bg-card overflow-hidden shadow-sm">{/*Professional container*/}
       {/* Панель инструментов */}
       {(selectedCells.length > 0 || selectedRows.length > 0) && !isLaunched && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b-2 border-blue-200 p-4 animate-fade-in">
+        <div className="bg-secondary border-b border-table-border px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold text-blue-800 flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            <div className="text-sm font-medium text-foreground flex items-center gap-2">
+              <div className="w-2 h-2 bg-primary rounded-full"></div>
               {selectedCells.length > 0 && `Выбрано ячеек: ${selectedCells.length}`}
               {selectedRows.length > 0 && `Выбрано строк: ${selectedRows.length}`}
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               {selectedCells.length > 0 && (
                 <Button 
                   size="sm" 
-                  className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                  className="h-8"
                   onClick={handleBulkCellEdit}
                 >
                   <Edit className="h-4 w-4 mr-2" />
@@ -276,7 +276,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
               <Button 
                 size="sm" 
                 variant="outline"
-                className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 transition-all duration-200"
+                className="h-8"
                 onClick={() => {
                   setSelectedCells([]);
                   setSelectedRows([]);
@@ -291,36 +291,36 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
 
       {/* Таблица в стиле Google Sheets */}
       <div className="overflow-auto" ref={tableRef} onMouseUp={handleMouseUp}>
-        <table className="w-full border-collapse bg-white">
+        <table className="w-full border-collapse bg-card">
           {/* Заголовок */}
           <thead>
             <tr>
-              <th className="sticky top-0 left-0 z-20 w-12 h-10 bg-gradient-to-b from-gray-50 to-gray-100 border-r-2 border-b-2 border-gray-300 text-xs font-semibold text-gray-600 shadow-sm">
-                <div className="w-full h-full flex items-center justify-center hover:bg-gray-200 transition-colors duration-150 cursor-pointer select-none">
-                  <div className="w-4 h-4 border border-gray-400 rounded-sm"></div>
+              <th className="sticky top-0 left-0 z-20 w-12 h-11 bg-table-header border-r border-b border-table-header-border text-xs font-medium text-muted-foreground">
+                <div className="w-full h-full flex items-center justify-center hover:bg-accent transition-colors cursor-pointer select-none">
+                  <div className="w-3 h-3 border border-border rounded-sm"></div>
                 </div>
               </th>
               {columns.map((col, index) => (
                 <th 
                   key={col.key} 
-                  className="sticky top-0 z-10 h-10 bg-gradient-to-b from-gray-50 to-gray-100 border-r border-b-2 border-gray-300 text-xs font-semibold text-gray-700 px-3 hover:bg-gray-200 transition-colors duration-150 relative group"
+                  className="sticky top-0 z-10 h-11 bg-table-header border-r border-b border-table-header-border text-xs font-medium text-muted-foreground px-3 hover:bg-accent transition-colors relative group"
                   style={{ 
                     width: columnWidths[col.key] || 150,
                     minWidth: columnWidths[col.key] || 150 
                   }}
                 >
-                  <div className="flex items-center justify-center h-full select-none cursor-pointer">
+                  <div className="flex items-center justify-start h-full select-none cursor-pointer truncate">
                     {col.label}
                   </div>
                   {/* Ресайзер колонки */}
                   <div 
-                    className="absolute right-0 top-0 w-2 h-full cursor-col-resize bg-transparent hover:bg-blue-300 transition-colors duration-150 opacity-0 group-hover:opacity-100"
+                    className="absolute right-0 top-0 w-1 h-full cursor-col-resize bg-transparent hover:bg-table-resize-handle transition-colors opacity-0 group-hover:opacity-100"
                     onMouseDown={(e) => handleColumnResize(col.key, e)}
                   />
                 </th>
               ))}
               {!isLaunched && (
-                <th className="sticky top-0 z-10 w-24 h-10 bg-gradient-to-b from-gray-50 to-gray-100 border-b-2 border-gray-300 text-xs font-semibold text-gray-700 select-none">
+                <th className="sticky top-0 z-10 w-24 h-11 bg-table-header border-b border-table-header-border text-xs font-medium text-muted-foreground select-none">
                   <div className="flex items-center justify-center h-full">
                     Действия
                   </div>
@@ -334,16 +334,16 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
             {campaigns.map((campaign, rowIndex) => {
               const isRowSelectedState = isRowSelected(campaign.id);
               return (
-                <tr 
+                 <tr 
                   key={campaign.id}
-                  className={`group hover:bg-blue-50/50 transition-all duration-200 ${
-                    isRowSelectedState ? 'bg-blue-50 ring-2 ring-blue-300' : ''
+                  className={`group hover:bg-table-row-hover transition-colors ${
+                    isRowSelectedState ? 'bg-table-row-selected' : ''
                   }`}
                 >
                   {/* Заголовок строки */}
                   <td 
-                    className={`sticky left-0 z-10 w-12 h-10 bg-gradient-to-r from-gray-50 to-gray-100 border-r-2 border-b border-gray-300 text-xs text-center cursor-pointer font-medium text-gray-700 hover:bg-gray-200 transition-all duration-150 select-none ${
-                      isRowSelectedState ? 'bg-blue-100 border-r-blue-400' : ''
+                    className={`sticky left-0 z-10 w-12 h-11 bg-table-header border-r border-b border-table-border text-xs text-center cursor-pointer font-medium text-muted-foreground hover:bg-accent transition-colors select-none ${
+                      isRowSelectedState ? 'bg-table-row-selected' : ''
                     }`}
                     onClick={(e) => handleRowHeaderClick(campaign.id, rowIndex, e)}
                   >
@@ -360,11 +360,11 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                     return (
                       <td 
                         key={col.key}
-                        className={`relative h-10 border-r border-b border-gray-200 px-3 text-sm cursor-cell select-none transition-all duration-150 group-hover:bg-blue-25 ${
+                        className={`relative h-11 border-r border-b border-table-border px-3 text-sm cursor-cell select-none transition-colors ${
                           isSelected 
-                            ? 'bg-blue-200 ring-2 ring-blue-500 ring-inset shadow-sm' 
-                            : 'hover:bg-blue-100/60'
-                        } ${isRowSelectedState ? 'bg-blue-50' : ''}`}
+                            ? 'bg-table-cell-selected ring-1 ring-inset ring-primary' 
+                            : 'hover:bg-table-row-hover'
+                        } ${isRowSelectedState ? 'bg-table-row-selected' : ''}`}
                         style={{ 
                           width: columnWidths[col.key] || 150,
                           minWidth: columnWidths[col.key] || 150 
@@ -407,16 +407,16 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                             >
                               <Copy className="h-3 w-3" />
                             </Button>
-                            <span className="text-xs truncate text-gray-700 font-mono">
+                            <span className="text-xs truncate text-foreground font-mono">
                               {campaign.campaignUrl}
                             </span>
                           </div>
                         ) : col.key === 'createdAt' ? (
-                          <span className="text-gray-700 font-mono text-xs">
+                          <span className="text-muted-foreground font-mono text-xs">
                             {(campaign[col.key] as Date).toLocaleDateString('ru-RU')}
                           </span>
                         ) : (
-                          <span className="block truncate text-gray-700">
+                          <span className="block truncate text-foreground">
                             {String(campaign[col.key] || '-')}
                           </span>
                         )}
@@ -426,13 +426,13 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
 
                   {/* Действия */}
                   {!isLaunched && (
-                    <td className="h-10 border-b border-gray-200 px-3">
+                    <td className="h-11 border-b border-table-border px-3">
                       <div className="flex items-center justify-center h-full">
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={() => onDeleteCampaign(campaign.id)}
-                          className="h-7 w-7 p-0 hover:bg-red-100 hover:text-red-600 transition-all duration-200 opacity-0 group-hover:opacity-100"
+                          className="h-7 w-7 p-0 hover:bg-destructive/10 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -447,13 +447,19 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
       </div>
 
       {campaigns.length === 0 && (
-        <div className="p-12 text-center">
-          <div className="animate-fade-in">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center">
-              <Edit className="w-8 h-8 text-blue-500" />
+        <div className="text-center py-16 px-4">
+          <div className="max-w-md mx-auto">
+            <div className="mb-6">
+              <div className="w-16 h-16 mx-auto bg-muted rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-border border-dashed rounded"></div>
+              </div>
             </div>
-            <p className="text-gray-500 text-lg font-medium">Нет кампаний</p>
-            <p className="text-gray-400 text-sm mt-1">Начните добавлять их через чат!</p>
+            <h3 className="text-lg font-medium text-foreground mb-2">
+              Пока нет кампаний
+            </h3>
+            <p className="text-muted-foreground text-sm">
+              Используйте чат ниже, чтобы создать ваши первые кампании.
+            </p>
           </div>
         </div>
       )}

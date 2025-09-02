@@ -61,8 +61,12 @@ export default {
 				},
 				table: {
 					header: 'hsl(var(--table-header))',
+					'header-border': 'hsl(var(--table-header-border))',
 					'row-hover': 'hsl(var(--table-row-hover))',
-					border: 'hsl(var(--table-border))'
+					'row-selected': 'hsl(var(--table-row-selected))',
+					border: 'hsl(var(--table-border))',
+					'cell-selected': 'hsl(var(--table-cell-selected))',
+					'resize-handle': 'hsl(var(--table-resize-handle))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

@@ -43,10 +43,14 @@ All colors MUST be HSL.
     --chat-ai-bg: 217 20% 96%;
     --chat-ai-text: 224 15% 20%;
 
-    /* Table Colors */
-    --table-header: 217 25% 95%;
-    --table-row-hover: 217 25% 98%;
-    --table-border: 217 20% 90%;
+    /* Professional Table Colors - Airtable inspired */
+    --table-header: 220 14% 96%;
+    --table-header-border: 220 14% 88%;
+    --table-row-hover: 217 100% 99%;
+    --table-row-selected: 217 100% 97%;
+    --table-border: 220 14% 92%;
+    --table-cell-selected: 217 100% 93%;
+    --table-resize-handle: 217 91% 60%;
 
     --radius: 0.5rem;
 
@@ -103,10 +107,14 @@ All colors MUST be HSL.
     --chat-ai-bg: 224 25% 15%;
     --chat-ai-text: 217 25% 85%;
 
-    /* Table Colors */
+    /* Professional Table Colors - Airtable inspired */
     --table-header: 224 25% 12%;
+    --table-header-border: 224 25% 25%;
     --table-row-hover: 224 25% 18%;
+    --table-row-selected: 224 25% 15%;
     --table-border: 224 25% 25%;
+    --table-cell-selected: 224 35% 20%;
+    --table-resize-handle: 217 91% 60%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
