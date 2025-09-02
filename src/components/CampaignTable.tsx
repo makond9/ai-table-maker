@@ -81,14 +81,12 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign, i
         // Обычный режим - все колонки
         <>
           <div className="bg-table-header border-b border-table-border">
-            <div className="grid grid-cols-9 gap-4 p-4 font-medium text-sm text-muted-foreground">
+            <div className="grid grid-cols-7 gap-4 p-4 font-medium text-sm text-muted-foreground">
               <div>Трафик аккаунт</div>
               <div>Оффер</div>
               <div>Страна</div>
               <div>РК</div>
               <div>Пиксель</div>
-              <div>Название кампании</div>
-              <div>Ссылка</div>
               <div>Создано</div>
               <div>Действия</div>
             </div>
@@ -98,7 +96,7 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign, i
             {campaigns.map((campaign) => (
               <div
                 key={campaign.id}
-                className="grid grid-cols-9 gap-4 p-4 hover:bg-table-row-hover transition-colors"
+                className="grid grid-cols-7 gap-4 p-4 hover:bg-table-row-hover transition-colors"
               >
                 <div className="flex items-center">
                   {editingId === campaign.id ? (
@@ -209,26 +207,6 @@ export function CampaignTable({ campaigns, onUpdateCampaign, onDeleteCampaign, i
                     </Select>
                   ) : (
                     <span>{campaign.pixel}</span>
-                  )}
-                </div>
-
-                <div className="flex items-center">
-                  <span>{campaign.campaignName || '-'}</span>
-                </div>
-
-                <div className="flex items-center">
-                  {campaign.campaignUrl ? (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        navigator.clipboard.writeText(campaign.campaignUrl!);
-                      }}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  ) : (
-                    '-'
                   )}
                 </div>
 
