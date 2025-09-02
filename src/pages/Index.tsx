@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Campaign } from '@/types/campaign';
-import { CampaignTable } from '@/components/CampaignTable';
+import { GoogleSheetsTable } from '@/components/GoogleSheetsTable';
 import { ChatInterface } from '@/components/ChatInterface';
 import { parseMessage, generateAIResponse, parseBulkUpdateCommand, generateBulkUpdateResponse } from '@/utils/aiParser';
 import { useToast } from '@/hooks/use-toast';
@@ -9,7 +9,6 @@ import { Bot } from 'lucide-react';
 const Index = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [isLaunched, setIsLaunched] = useState(false);
-  const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
   const { toast } = useToast();
 
   const handleSendMessage = (message: string) => {
@@ -77,24 +76,6 @@ const Index = () => {
     });
   };
 
-  const handleBulkUpdate = (updates: Partial<Campaign>) => {
-    setCampaigns(prev => 
-      prev.map(campaign => 
-        selectedCampaigns.includes(campaign.id) 
-          ? { ...campaign, ...updates }
-          : campaign
-      )
-    );
-    
-    // Очищаем выбор после обновления
-    setSelectedCampaigns([]);
-    
-    toast({
-      title: "Кампании обновлены",
-      description: `Обновлено ${selectedCampaigns.length} кампаний`,
-    });
-  };
-
   const handleLaunchCampaigns = () => {
     const launchedCampaigns = campaigns.map(campaign => ({
       ...campaign,
@@ -132,14 +113,11 @@ const Index = () => {
                 Всего кампаний: {campaigns.length}
               </p>
             </div>
-            <CampaignTable
+            <GoogleSheetsTable
               campaigns={campaigns}
               onUpdateCampaign={handleUpdateCampaign}
               onDeleteCampaign={handleDeleteCampaign}
               isLaunched={isLaunched}
-              selectedCampaigns={selectedCampaigns}
-              onSelectionChange={setSelectedCampaigns}
-              onBulkUpdate={handleBulkUpdate}
             />
           </div>
 
