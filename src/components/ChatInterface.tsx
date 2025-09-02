@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Send, Bot, User, Settings, Play } from 'lucide-react';
+import { Send, Bot, User, Settings, Play, Cog } from 'lucide-react';
+import { CommandManager } from './CommandManager';
 
 interface Message {
   id: string;
@@ -37,6 +38,7 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [activeTab, setActiveTab] = useState('main');
+  const [isCommandManagerOpen, setIsCommandManagerOpen] = useState(false);
 
   const handleSend = () => {
     if (!inputValue.trim()) return;
@@ -127,10 +129,20 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns }
   return (
     <div className="flex flex-col h-full bg-chat-background rounded-lg border border-border">
       <div className="p-4 border-b border-border">
-        <h3 className="font-medium flex items-center gap-2 mb-3">
-          <Bot className="h-5 w-5 text-primary" />
-          AI Ассистент кампаний
-        </h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-medium flex items-center gap-2">
+            <Bot className="h-5 w-5 text-primary" />
+            AI Ассистент кампаний
+          </h3>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setIsCommandManagerOpen(true)}
+          >
+            <Cog className="w-4 h-4 mr-2" />
+            Команды
+          </Button>
+        </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
@@ -181,6 +193,11 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns }
           </div>
         </div>
       </Tabs>
+      
+      <CommandManager 
+        isOpen={isCommandManagerOpen}
+        onClose={() => setIsCommandManagerOpen(false)}
+      />
     </div>
   );
 }
