@@ -136,6 +136,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
   };
 
   const handleCellDoubleClick = (rowId: string, field: keyof Campaign) => {
+    // Разрешаем редактирование только для определенных полей
     if (!editableFields.includes(field)) return;
     
     const campaign = campaigns.find(c => c.id === rowId);
@@ -253,7 +254,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                       className={`h-8 border border-gray-300 px-2 text-sm cursor-cell ${
                         isSelected ? 'bg-blue-100 border-blue-400 border-2' : 'hover:bg-gray-50'
                       } ${isRowSelected(campaign.id) ? 'bg-blue-50' : ''}`}
-                      onClick={(e) => col.editable && handleCellClick(campaign.id, col.key, rowIndex, colIndex, e)}
+                      onClick={(e) => handleCellClick(campaign.id, col.key, rowIndex, colIndex, e)}
                       onDoubleClick={() => handleCellDoubleClick(campaign.id, col.key)}
                     >
                       {isEditing ? (
