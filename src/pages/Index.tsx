@@ -8,6 +8,7 @@ import { Bot } from 'lucide-react';
 
 const Index = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [isLaunched, setIsLaunched] = useState(false);
   const { toast } = useToast();
 
   const handleSendMessage = (message: string) => {
@@ -55,11 +56,14 @@ const Index = () => {
   };
 
   const handleLaunchCampaigns = () => {
-    setCampaigns(prev => prev.map(campaign => ({
+    const launchedCampaigns = campaigns.map(campaign => ({
       ...campaign,
       campaignName: `${campaign.trafficAccount}_${campaign.offer}_${campaign.country}_${campaign.rk}`,
       campaignUrl: `https://campaign.tracker.com/c/${campaign.id}`
-    })));
+    }));
+    
+    setCampaigns(launchedCampaigns);
+    setIsLaunched(true);
     
     toast({
       title: "Кампании запущены",
@@ -92,6 +96,7 @@ const Index = () => {
               campaigns={campaigns}
               onUpdateCampaign={handleUpdateCampaign}
               onDeleteCampaign={handleDeleteCampaign}
+              isLaunched={isLaunched}
             />
           </div>
 
