@@ -200,7 +200,7 @@ const Index = () => {
               onDeleteCampaign={handleDeleteCampaign}
               isLaunched={isLaunched}
             />
-            <div className="mt-4 flex justify-center">
+            <div className="mt-4 flex justify-start">
               <Button
                 onClick={handleAddNewRow}
                 size="icon"
