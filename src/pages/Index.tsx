@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Campaign } from '@/types/campaign';
 import { GoogleSheetsTable } from '@/components/GoogleSheetsTable';
+import { ModernTable } from '@/components/ModernTable';
 import { ChatInterface } from '@/components/ChatInterface';
 import { AIThinkingAnimation } from '@/components/AIThinkingAnimation';
 import { parseMessage, generateAIResponse, parseBulkUpdateCommand, generateBulkUpdateResponse } from '@/utils/aiParser';
@@ -242,7 +243,7 @@ const Index = () => {
                     Всего кампаний: {campaigns.length}
                   </p>
                 </div>
-                <GoogleSheetsTable
+                <ModernTable
                   campaigns={campaigns}
                   onUpdateCampaign={handleUpdateCampaign}
                   onDeleteCampaign={handleDeleteCampaign}

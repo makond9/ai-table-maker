@@ -43,15 +43,15 @@ All colors MUST be HSL.
     --chat-ai-bg: 217 20% 96%;
     --chat-ai-text: 224 15% 20%;
 
-    /* Clean Table Colors - Site style */
-    --table-header: 217 20% 96%;
-    --table-header-border: 217 20% 88%;
-    --table-row-hover: 217 50% 98%;
-    --table-row-selected: 217 85% 94%;
-    --table-border: 217 20% 92%;
-    --table-cell-selected: 217 85% 90%;
-    --table-resize-handle: 217 91% 60%;
-    --table-header-text: 224 15% 20%;
+    /* Modern Card Table Colors */
+    --table-card: 0 0% 100%;
+    --table-card-hover: 217 91% 98%;
+    --table-card-selected: 217 91% 96%;
+    --table-card-border: 217 20% 95%;
+    --table-header-modern: 224 15% 20%;
+    --table-accent: 217 91% 60%;
+    --table-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --table-shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
     --radius: 0.5rem;
 
@@ -108,15 +108,15 @@ All colors MUST be HSL.
     --chat-ai-bg: 224 25% 15%;
     --chat-ai-text: 217 25% 85%;
 
-    /* Clean Table Colors - Dark mode */
-    --table-header: 224 25% 15%;
-    --table-header-border: 224 25% 25%;
-    --table-row-hover: 224 25% 18%;
-    --table-row-selected: 224 25% 20%;
-    --table-border: 224 25% 25%;
-    --table-cell-selected: 224 35% 25%;
-    --table-resize-handle: 217 91% 60%;
-    --table-header-text: 217 25% 85%;
+    /* Modern Card Table Colors - Dark */
+    --table-card: 224 25% 10%;
+    --table-card-hover: 224 25% 15%;
+    --table-card-selected: 224 25% 18%;
+    --table-card-border: 224 25% 20%;
+    --table-header-modern: 217 25% 85%;
+    --table-accent: 217 91% 60%;
+    --table-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+    --table-shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
