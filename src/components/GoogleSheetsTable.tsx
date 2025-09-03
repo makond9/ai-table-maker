@@ -398,18 +398,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                      onClick={(e) => !isDraggingRows && handleRowHeaderClick(campaign.id, rowIndex, e)}
                    >
                      <div className="w-full h-full flex items-center justify-center">
-                       <div className="flex items-center gap-2">
-                         <div className={`w-3 h-3 border border-border rounded transition-colors ${
-                           isRowSelectedState ? 'bg-primary border-primary' : ''
-                         }`}>
-                           {isRowSelectedState && (
-                             <div className="w-full h-full flex items-center justify-center">
-                               <div className="w-1.5 h-1.5 bg-white rounded-sm"></div>
-                             </div>
-                           )}
-                         </div>
-                         <span className="text-xs">{rowIndex + 1}</span>
-                       </div>
+                       <span className="text-xs font-medium">{rowIndex + 1}</span>
                      </div>
                    </td>
 
