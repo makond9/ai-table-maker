@@ -10,7 +10,7 @@ export function AIThinkingAnimation({ onComplete }: AIThinkingAnimationProps) {
   const [isVisible, setIsVisible] = useState(true);
 
   const steps = [
-    "Отправляю запрос на создание кампаний в Тоник"
+    "* Отправляю запрос на создание кампаний в Тоник"
   ];
 
   useEffect(() => {
@@ -32,13 +32,16 @@ export function AIThinkingAnimation({ onComplete }: AIThinkingAnimationProps) {
   if (!isVisible) return null;
 
   return (
-    <div className="flex gap-3 justify-start mb-4">
-      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-        <Bot className="h-4 w-4 text-primary-foreground animate-pulse" />
-      </div>
-      
-      <div className="max-w-[80%] p-3 rounded-lg bg-chat-ai-bg text-chat-ai-text">
-        <div className="space-y-2">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-card p-8 rounded-lg border shadow-lg max-w-md w-full mx-4">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <Bot className="h-4 w-4 text-primary-foreground animate-pulse" />
+          </div>
+          <h3 className="font-medium text-lg">AI обрабатывает запрос</h3>
+        </div>
+        
+        <div className="space-y-3">
           {steps.map((step, index) => (
             <div
               key={index}
@@ -56,29 +59,24 @@ export function AIThinkingAnimation({ onComplete }: AIThinkingAnimationProps) {
                 />
                 <span 
                   className={`text-sm transition-colors duration-300 ${
-                    index === currentStep ? 'text-chat-ai-text' : 'text-muted-foreground'
+                    index === currentStep ? 'text-foreground animate-pulse' : 'text-muted-foreground'
                   }`}
                 >
                   {step}
                 </span>
               </div>
               {index === currentStep && (
-                <div className="ml-4 mt-2">
+                <div className="ml-4 mt-1">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-1 bg-primary rounded-full animate-pulse"></div>
-                    <div className="w-6 h-1 bg-primary/70 rounded-full animate-pulse [animation-delay:0.2s]"></div>
-                    <div className="w-4 h-1 bg-primary/50 rounded-full animate-pulse [animation-delay:0.4s]"></div>
-                    <div className="w-8 h-1 bg-primary/30 rounded-full animate-pulse [animation-delay:0.6s]"></div>
+                    <div className="w-1 h-1 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                    <div className="w-1 h-1 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                    <div className="w-1 h-1 bg-primary rounded-full animate-bounce"></div>
                   </div>
                 </div>
               )}
             </div>
           ))}
         </div>
-        
-        <span className="text-xs opacity-70 mt-2 block">
-          {new Date().toLocaleTimeString('ru-RU')}
-        </span>
       </div>
     </div>
   );

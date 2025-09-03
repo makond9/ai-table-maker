@@ -387,18 +387,18 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
           {/* Заголовок */}
           <thead>
             <tr>
-              <th className="sticky top-0 left-0 z-20 w-14 h-12 bg-table-header border-r-2 border-b-2 border-table-header-border text-xs font-semibold text-table-header-text">
+              <th className="sticky top-0 left-0 z-20 w-14 h-12 bg-table-header border-r-2 border-b-2 border-table-header-border text-xs font-semibold text-muted-foreground">
                 <div className="w-full h-full flex items-center justify-center hover:bg-table-row-hover transition-colors cursor-pointer select-none">
-                  <div className="w-4 h-4 border-2 border-table-border rounded"></div>
+                  <div className="w-4 h-4 border-2 border-border rounded"></div>
                 </div>
               </th>
               {columns.map((col, index) => (
                 <th 
                   key={col.key} 
-                  className="sticky top-0 z-10 h-12 bg-table-header border-r-2 border-b-2 border-table-header-border text-sm font-semibold text-table-header-text px-4 hover:bg-table-row-hover transition-colors relative group"
+                  className="sticky top-0 z-10 h-12 bg-table-header border-r-2 border-b-2 border-table-header-border text-sm font-semibold text-foreground px-4 hover:bg-table-row-hover transition-colors relative group"
                   style={{ 
                     width: columnWidths[col.key] || 150,
-                    minWidth: columnWidths[col.key] || 150
+                    minWidth: columnWidths[col.key] || 150 
                   }}
                 >
                   <div className="flex items-center justify-start h-full select-none cursor-pointer truncate font-medium">
@@ -412,7 +412,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                 </th>
               ))}
               {!isLaunched && (
-                <th className="sticky top-0 z-10 w-28 h-12 bg-table-header border-b-2 border-table-header-border text-sm font-semibold text-table-header-text select-none">
+                <th className="sticky top-0 z-10 w-28 h-12 bg-table-header border-b-2 border-table-header-border text-sm font-semibold text-foreground select-none">
                   <div className="flex items-center justify-center h-full">
                     Действия
                   </div>

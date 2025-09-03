@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Campaign } from '@/types/campaign';
 import { GoogleSheetsTable } from '@/components/GoogleSheetsTable';
-import { ModernTable } from '@/components/ModernTable';
 import { ChatInterface } from '@/components/ChatInterface';
-import { CampaignPreview } from '@/components/CampaignPreview';
+import { AIThinkingAnimation } from '@/components/AIThinkingAnimation';
 import { parseMessage, generateAIResponse, parseBulkUpdateCommand, generateBulkUpdateResponse } from '@/utils/aiParser';
 import { aiService } from '@/services/aiService';
 import { toast } from 'sonner';
@@ -16,8 +15,6 @@ const Index = () => {
   const [isLaunched, setIsLaunched] = useState(false);
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
   const [showThinking, setShowThinking] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const [previewCampaigns, setPreviewCampaigns] = useState<Campaign[]>([]);
   const { toast } = useToast();
 
   // Проверяем, все ли параметры заданы
@@ -43,10 +40,22 @@ const Index = () => {
           ...campaignData
         })) as Campaign[];
         
-        
-        // Показываем превью перед добавлением
-        setPreviewCampaigns(newCampaigns);
-        setShowPreview(true);
+        setCampaigns(prev => {
+          const updated = [...prev, ...newCampaigns];
+          if (checkAllParametersSet(updated)) {
+            setNeedsConfirmation(true);
+            toast({
+              title: "Кампании готовы",
+              description: "Подтвердите создание кампании или укажите правки",
+            });
+          } else {
+            toast({
+              title: "Кампании созданы",
+              description: result.message,
+            });
+          }
+          return updated;
+        });
         
       } else if (result.bulkUpdate) {
         // Массовое обновление
@@ -111,10 +120,23 @@ const Index = () => {
         createdAt: new Date()
       }));
 
-      
-      // Показываем превью перед добавлением
-      setPreviewCampaigns(newCampaigns);
-      setShowPreview(true);
+      setCampaigns(prev => {
+        const updated = [...prev, ...newCampaigns];
+        if (checkAllParametersSet(updated)) {
+          setNeedsConfirmation(true);
+          toast({
+            title: "Кампании готовы",
+            description: "Подтвердите создание кампании или укажите правки",
+          });
+        } else {
+          const response = generateAIResponse(parsedCampaigns);
+          toast({
+            title: "Кампании созданы",
+            description: response,
+          });
+        }
+        return updated;
+      });
     }
   };
 
@@ -154,27 +176,6 @@ const Index = () => {
       title: "Новая строка добавлена",
       description: "Заполните данные кампании",
     });
-  };
-
-  const handlePreviewConfirm = () => {
-    setCampaigns(prev => [...prev, ...previewCampaigns]);
-    setPreviewCampaigns([]);
-    setShowPreview(false);
-    
-    // Проверяем нужно ли подтверждение для запуска
-    if (checkAllParametersSet(previewCampaigns)) {
-      setNeedsConfirmation(true);
-    }
-    
-    toast({
-      title: "Кампании добавлены",
-      description: `Добавлено ${previewCampaigns.length} кампаний`,
-    });
-  };
-
-  const handlePreviewCancel = () => {
-    setPreviewCampaigns([]);
-    setShowPreview(false);
   };
 
   const handleConfirmLaunch = () => {
@@ -233,13 +234,7 @@ const Index = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            {showPreview ? (
-              <CampaignPreview
-                campaigns={previewCampaigns}
-                onConfirm={handlePreviewConfirm}
-                onCancel={handlePreviewCancel}
-              />
-            ) : campaigns.length > 0 ? (
+            {campaigns.length > 0 ? (
               <>
                 <div className="mb-4">
                   <h2 className="text-xl font-semibold mb-2">Таблица кампаний</h2>
@@ -247,7 +242,7 @@ const Index = () => {
                     Всего кампаний: {campaigns.length}
                   </p>
                 </div>
-                <ModernTable
+                <GoogleSheetsTable
                   campaigns={campaigns}
                   onUpdateCampaign={handleUpdateCampaign}
                   onDeleteCampaign={handleDeleteCampaign}
@@ -285,9 +280,11 @@ const Index = () => {
             onAIParseMessage={handleAIParseMessage}
             needsConfirmation={needsConfirmation}
             onConfirmLaunch={handleConfirmLaunch}
-            showThinking={showThinking}
-            onThinkingComplete={handleThinkingComplete}
           />
+          
+          {showThinking && (
+            <AIThinkingAnimation onComplete={handleThinkingComplete} />
+          )}
             </div>
           </div>
         </div>

@@ -60,14 +60,13 @@ export default {
 					'ai-text': 'hsl(var(--chat-ai-text))'
 				},
 				table: {
-					card: 'hsl(var(--table-card))',
-					'card-hover': 'hsl(var(--table-card-hover))',
-					'card-selected': 'hsl(var(--table-card-selected))',
-					'card-border': 'hsl(var(--table-card-border))',
-					'header-modern': 'hsl(var(--table-header-modern))',
-					accent: 'hsl(var(--table-accent))',
-					shadow: 'var(--table-shadow)',
-					'shadow-hover': 'var(--table-shadow-hover)'
+					header: 'hsl(var(--table-header))',
+					'header-border': 'hsl(var(--table-header-border))',
+					'row-hover': 'hsl(var(--table-row-hover))',
+					'row-selected': 'hsl(var(--table-row-selected))',
+					border: 'hsl(var(--table-border))',
+					'cell-selected': 'hsl(var(--table-cell-selected))',
+					'resize-handle': 'hsl(var(--table-resize-handle))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
