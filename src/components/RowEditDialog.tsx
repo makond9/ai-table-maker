@@ -50,7 +50,7 @@ export function RowEditDialog({ open, onOpenChange, campaign, onSave }: RowEditD
         
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="trafficAccount">Трафик аккаунт</Label>
+            <Label htmlFor="trafficAccount">Трафик-источник</Label>
             <Select
               value={formData.trafficAccount}
               onValueChange={(value) => handleFieldChange('trafficAccount', value)}

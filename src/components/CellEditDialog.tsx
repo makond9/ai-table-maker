@@ -81,7 +81,7 @@ export function CellEditDialog({ open, onOpenChange, selectedCells, campaigns, o
 
   const getFieldLabel = (field: keyof Campaign) => {
     const labels = {
-      trafficAccount: 'Трафик аккаунт',
+      trafficAccount: 'Трафик-источник',
       offer: 'Оффер',
       country: 'Страна',
       rk: 'РК',

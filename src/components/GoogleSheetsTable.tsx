@@ -325,7 +325,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
         { key: 'campaignUrl' as keyof Campaign, label: 'Ссылка на кампанию', editable: false }
       ]
     : [
-        { key: 'trafficAccount' as keyof Campaign, label: 'Трафик аккаунт', editable: true },
+        { key: 'trafficAccount' as keyof Campaign, label: 'Трафик-источник', editable: true },
         { key: 'offer' as keyof Campaign, label: 'Оффер', editable: true },
         { key: 'country' as keyof Campaign, label: 'Страна', editable: true },
         { key: 'rk' as keyof Campaign, label: 'РК', editable: true },
