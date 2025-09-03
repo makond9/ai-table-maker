@@ -1,10 +1,10 @@
 export interface Campaign {
   id: string;
-  trafficAccount: 'Мета' | 'ТикТок';
-  offer: string;
-  country: string;
-  rk: string;
-  pixel: string;
+  trafficAccount?: 'Мета' | 'ТикТок';
+  offer?: string;
+  country?: string;
+  rk?: string;
+  pixel?: string;
   campaignName?: string;
   campaignUrl?: string;
   createdAt: Date;

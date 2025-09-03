@@ -76,15 +76,12 @@ export function parseMessage(message: string): Partial<Campaign>[] {
   detectedOffers = [...new Set(detectedOffers)];
   detectedCountries = [...new Set(detectedCountries)];
 
-  // Если ничего не найдено, используем значения по умолчанию
+  // Если ничего не найдено, оставляем undefined для дальнейшего уточнения
   if (detectedOffers.length === 0) {
-    detectedOffers = ['Финансы'];
+    detectedOffers = [undefined as any];
   }
   if (detectedCountries.length === 0) {
-    detectedCountries = ['Россия'];
-  }
-  if (!trafficAccount) {
-    trafficAccount = 'Мета';
+    detectedCountries = [undefined as any];
   }
 
   // Создаем комбинации кампаний
@@ -94,8 +91,8 @@ export function parseMessage(message: string): Partial<Campaign>[] {
         trafficAccount,
         offer,
         country,
-        rk: RK_OPTIONS[0], // По умолчанию первый РК
-        pixel: PIXEL_OPTIONS[0] // По умолчанию первый пиксель
+        rk: undefined,
+        pixel: undefined
       });
     });
   });
@@ -108,13 +105,81 @@ export function generateAIResponse(campaigns: Partial<Campaign>[]): string {
     return "Не удалось понять запрос. Попробуйте указать трафик-источник (Мета/ТикТок), оффер и страну.";
   }
 
-  if (campaigns.length === 1) {
-    const campaign = campaigns[0];
-    return `Создана кампания: ${campaign.trafficAccount} - ${campaign.offer} - ${campaign.country}`;
+  return `Создано ${campaigns.length} кампаний. ${generateMissingFieldsMessage(campaigns)}`;
+}
+
+export function generateMissingFieldsMessage(campaigns: Partial<Campaign>[]): string {
+  const allMissingFields = new Set<string>();
+  const rowMissingFields: { [key: number]: string[] } = {};
+
+  campaigns.forEach((campaign, index) => {
+    const missing: string[] = [];
+    
+    if (!campaign.trafficAccount) {
+      missing.push('трафик-аккаунт');
+      allMissingFields.add('трафик-аккаунт');
+    }
+    if (!campaign.offer) {
+      missing.push('оффер');
+      allMissingFields.add('оффер');
+    }
+    if (!campaign.country) {
+      missing.push('страну');
+      allMissingFields.add('страну');
+    }
+    if (!campaign.rk) {
+      missing.push('РК');
+      allMissingFields.add('РК');
+    }
+    if (!campaign.pixel) {
+      missing.push('пиксель');
+      allMissingFields.add('пиксель');
+    }
+
+    if (missing.length > 0) {
+      rowMissingFields[index + 1] = missing;
+    }
+  });
+
+  if (allMissingFields.size === 0) {
+    return "";
   }
 
-  return `Создано ${campaigns.length} кампаний:
-${campaigns.map(c => `• ${c.trafficAccount} - ${c.offer} - ${c.country}`).join('\n')}`;
+  let message = "\n\nНужно уточнить:\n";
+
+  // Если все кампании имеют одинаковые пропущенные поля
+  const fieldCounts: { [key: string]: number } = {};
+  Object.values(rowMissingFields).forEach(fields => {
+    fields.forEach(field => {
+      fieldCounts[field] = (fieldCounts[field] || 0) + 1;
+    });
+  });
+
+  // Поля, которые отсутствуют во всех кампаниях
+  const universalMissing = Object.entries(fieldCounts)
+    .filter(([field, count]) => count === campaigns.length)
+    .map(([field]) => field);
+
+  if (universalMissing.length > 0) {
+    message += `• Для всех кампаний: ${universalMissing.join(', ')}\n`;
+  }
+
+  // Поля, которые отсутствуют в некоторых кампаниях
+  const partialMissing = Object.entries(fieldCounts)
+    .filter(([field, count]) => count < campaigns.length && count > 0)
+    .map(([field]) => field);
+
+  if (partialMissing.length > 0) {
+    partialMissing.forEach(field => {
+      const affectedRows = Object.entries(rowMissingFields)
+        .filter(([row, fields]) => fields.includes(field))
+        .map(([row]) => row);
+      
+      message += `• ${field} в строках: ${affectedRows.join(', ')}\n`;
+    });
+  }
+
+  return message;
 }
 
 export function parseBulkUpdateCommand(message: string): BulkUpdateCommand | null {

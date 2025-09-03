@@ -437,9 +437,9 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                             </span>
                           </div>
                          ) : (
-                           <span className="text-foreground truncate">
-                             {String(campaign[col.key] || 'Нужно уточнить')}
-                           </span>
+                            <span className="text-foreground truncate">
+                              {campaign[col.key] ? String(campaign[col.key]) : 'Нужно уточнить'}
+                            </span>
                          )}
                       </td>
                     );
