@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Trash2, Edit, Copy } from 'lucide-react';
 import { CellEditDialog } from './CellEditDialog';
 import { RowEditDialog } from './RowEditDialog';
+import { CampaignLinkStatus } from './CampaignLinkStatus';
 
 interface GoogleSheetsTableProps {
   campaigns: Campaign[];
@@ -322,7 +323,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
   const columns = isLaunched 
     ? [
         { key: 'campaignName' as keyof Campaign, label: 'Название кампании', editable: false },
-        { key: 'campaignUrl' as keyof Campaign, label: 'Ссылка на кампанию', editable: false }
+        { key: 'campaignUrl' as keyof Campaign, label: 'Ссылка в КликФелер', editable: false }
       ]
     : [
         { key: 'trafficAccount' as keyof Campaign, label: 'Трафик-источник', editable: true },
@@ -465,25 +466,13 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                           onMouseEnter={() => handleMouseEnter(campaign.id, col.key, rowIndex, colIndex)}
                           onClick={(e) => !isDragging && handleCellClick(campaign.id, col.key, rowIndex, colIndex, e)}
                         >
-                         {col.key === 'campaignUrl' && campaign.campaignUrl ? (
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => navigator.clipboard.writeText(campaign.campaignUrl!)}
-                              className="h-6 p-1 hover:bg-blue-200 transition-colors duration-150"
-                            >
-                              <Copy className="h-3 w-3" />
-                            </Button>
-                            <span className="text-xs truncate text-foreground font-mono">
-                              {campaign.campaignUrl}
-                            </span>
-                          </div>
-                         ) : (
-                            <span className="text-foreground truncate">
-                              {campaign[col.key] ? String(campaign[col.key]) : 'Нужно уточнить'}
-                            </span>
-                         )}
+                          {col.key === 'campaignUrl' ? (
+                            <CampaignLinkStatus campaignId={campaign.id} />
+                          ) : (
+                             <span className="text-foreground truncate">
+                               {campaign[col.key] ? String(campaign[col.key]) : 'Нужно уточнить'}
+                             </span>
+                          )}
                       </td>
                     );
                   })}

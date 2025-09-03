@@ -20,9 +20,11 @@ interface ChatInterfaceProps {
   onLaunchCampaigns: () => void;
   hasCampaigns: boolean;
   onAIParseMessage?: (message: string) => Promise<void>;
+  needsConfirmation?: boolean;
+  onConfirmLaunch?: () => void;
 }
 
-export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns, onAIParseMessage }: ChatInterfaceProps) {
+export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns, onAIParseMessage, needsConfirmation, onConfirmLaunch }: ChatInterfaceProps) {
   const [mainMessages, setMainMessages] = useState<Message[]>([
     {
       id: '1',
@@ -136,7 +138,11 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns, 
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      handleSend();
+      if (needsConfirmation && onConfirmLaunch) {
+        onConfirmLaunch();
+      } else {
+        handleSend();
+      }
     }
   };
 
@@ -205,14 +211,14 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns, 
         {renderMessages(mainMessages)}
 
         <div className="p-4 border-t border-border">
-          {hasCampaigns && (
+          {(hasCampaigns || needsConfirmation) && (
             <div className="mb-3">
               <Button 
-                onClick={onLaunchCampaigns} 
+                onClick={needsConfirmation && onConfirmLaunch ? onConfirmLaunch : onLaunchCampaigns} 
                 className="w-full bg-green-600 hover:bg-green-700 text-white"
               >
                 <Play className="h-4 w-4 mr-2" />
-                Запуск кампаний
+                {needsConfirmation ? 'Подтвердить' : 'Запуск кампаний'}
               </Button>
             </div>
           )}

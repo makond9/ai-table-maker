@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Campaign } from '@/types/campaign';
 import { GoogleSheetsTable } from '@/components/GoogleSheetsTable';
 import { ChatInterface } from '@/components/ChatInterface';
+import { AIThinkingAnimation } from '@/components/AIThinkingAnimation';
 import { parseMessage, generateAIResponse, parseBulkUpdateCommand, generateBulkUpdateResponse } from '@/utils/aiParser';
 import { aiService } from '@/services/aiService';
 import { toast } from 'sonner';
@@ -12,7 +13,20 @@ import { Button } from '@/components/ui/button';
 const Index = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [isLaunched, setIsLaunched] = useState(false);
+  const [needsConfirmation, setNeedsConfirmation] = useState(false);
+  const [showThinking, setShowThinking] = useState(false);
   const { toast } = useToast();
+
+  // Проверяем, все ли параметры заданы
+  const checkAllParametersSet = (campaigns: Campaign[]) => {
+    return campaigns.every(campaign => 
+      campaign.trafficAccount && 
+      campaign.offer && 
+      campaign.country && 
+      campaign.rk && 
+      campaign.pixel
+    );
+  };
 
   const handleAIParseMessage = async (message: string) => {
     try {
@@ -26,10 +40,21 @@ const Index = () => {
           ...campaignData
         })) as Campaign[];
         
-        setCampaigns(prev => [...prev, ...newCampaigns]);
-        toast({
-          title: "Кампании созданы",
-          description: result.message,
+        setCampaigns(prev => {
+          const updated = [...prev, ...newCampaigns];
+          if (checkAllParametersSet(updated)) {
+            setNeedsConfirmation(true);
+            toast({
+              title: "Кампании готовы",
+              description: "Подтвердите создание кампании или укажите правки",
+            });
+          } else {
+            toast({
+              title: "Кампании созданы",
+              description: result.message,
+            });
+          }
+          return updated;
         });
         
       } else if (result.bulkUpdate) {
@@ -95,12 +120,22 @@ const Index = () => {
         createdAt: new Date()
       }));
 
-      setCampaigns(prev => [...prev, ...newCampaigns]);
-      
-      const response = generateAIResponse(parsedCampaigns);
-      toast({
-        title: "Кампании созданы",
-        description: response,
+      setCampaigns(prev => {
+        const updated = [...prev, ...newCampaigns];
+        if (checkAllParametersSet(updated)) {
+          setNeedsConfirmation(true);
+          toast({
+            title: "Кампании готовы",
+            description: "Подтвердите создание кампании или укажите правки",
+          });
+        } else {
+          const response = generateAIResponse(parsedCampaigns);
+          toast({
+            title: "Кампании созданы",
+            description: response,
+          });
+        }
+        return updated;
       });
     }
   };
@@ -143,20 +178,31 @@ const Index = () => {
     });
   };
 
-  const handleLaunchCampaigns = () => {
+  const handleConfirmLaunch = () => {
+    setNeedsConfirmation(false);
+    setShowThinking(true);
+  };
+
+  const handleThinkingComplete = () => {
     const launchedCampaigns = campaigns.map(campaign => ({
       ...campaign,
       campaignName: `${campaign.trafficAccount}_${campaign.offer}_${campaign.country}_${campaign.rk}`,
-      campaignUrl: `https://campaign.tracker.com/c/${campaign.id}`
+      campaignUrl: `https://clickfeler.com/campaign/${campaign.id}`
     }));
     
     setCampaigns(launchedCampaigns);
     setIsLaunched(true);
+    setShowThinking(false);
     
     toast({
       title: "Кампании запущены",
-      description: "Названия и ссылки кампаний созданы",
+      description: "Кампании созданы в Тоник и готовы к работе",
     });
+  };
+
+  const handleLaunchCampaigns = () => {
+    // Оставляем для обратной совместимости, но обычно используется handleConfirmLaunch
+    handleConfirmLaunch();
   };
 
   return (
@@ -232,7 +278,13 @@ const Index = () => {
             onLaunchCampaigns={handleLaunchCampaigns}
             hasCampaigns={campaigns.length > 0}
             onAIParseMessage={handleAIParseMessage}
+            needsConfirmation={needsConfirmation}
+            onConfirmLaunch={handleConfirmLaunch}
           />
+          
+          {showThinking && (
+            <AIThinkingAnimation onComplete={handleThinkingComplete} />
+          )}
             </div>
           </div>
         </div>
