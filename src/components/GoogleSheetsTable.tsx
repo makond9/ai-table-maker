@@ -26,7 +26,9 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const [columnWidths, setColumnWidths] = useState<{ [key: string]: number }>({});
   const [isDragging, setIsDragging] = useState(false);
+  const [isDraggingRows, setIsDraggingRows] = useState(false);
   const [dragStart, setDragStart] = useState<{ row: number; col: number } | null>(null);
+  const [rowDragStart, setRowDragStart] = useState<number | null>(null);
   const [isResizing, setIsResizing] = useState<string | null>(null);
 
   const editableFields: (keyof Campaign)[] = ['trafficAccount', 'offer', 'country', 'rk', 'pixel'];
@@ -144,6 +146,33 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
     setSelectedCells([]);
   };
 
+  const handleRowHeaderMouseDown = (rowId: string, rowIndex: number, event: React.MouseEvent) => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey) {
+      handleRowHeaderClick(rowId, rowIndex, event);
+      return;
+    }
+
+    event.preventDefault();
+    if (window.getSelection) {
+      window.getSelection()?.removeAllRanges();
+    }
+
+    setIsDraggingRows(true);
+    setRowDragStart(rowIndex);
+    setSelectedRows([rowId]);
+    setSelectedCells([]);
+  };
+
+  const handleRowHeaderMouseEnter = (rowId: string, rowIndex: number) => {
+    if (!isDraggingRows || rowDragStart === null) return;
+
+    const startRow = Math.min(rowDragStart, rowIndex);
+    const endRow = Math.max(rowDragStart, rowIndex);
+    
+    const newSelection = campaigns.slice(startRow, endRow + 1).map(c => c.id);
+    setSelectedRows(newSelection);
+  };
+
 
 
   const handleBulkCellEdit = () => {
@@ -164,6 +193,21 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
 
   const handleRowSave = (campaignId: string, updates: Partial<Campaign>) => {
     onUpdateCampaign(campaignId, updates);
+  };
+
+  const handleBulkRowEdit = () => {
+    if (selectedRows.length === 1) {
+      const campaign = campaigns.find(c => selectedRows.includes(c.id));
+      if (campaign) {
+        handleRowEdit(campaign);
+      }
+    } else if (selectedRows.length > 1) {
+      // For multiple rows, we can implement a different dialog or use the same one for the first selected
+      const campaign = campaigns.find(c => c.id === selectedRows[0]);
+      if (campaign) {
+        handleRowEdit(campaign);
+      }
+    }
   };
 
   // Обработка drag selection
@@ -204,7 +248,9 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
 
   const handleMouseUp = () => {
     setIsDragging(false);
+    setIsDraggingRows(false);
     setDragStart(null);
+    setRowDragStart(null);
   };
 
   // Обработка изменения ширины колонок
@@ -263,6 +309,16 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                 >
                   <Edit className="h-4 w-4 mr-2" />
                   Редактировать ячейки
+                </Button>
+              )}
+              {selectedRows.length > 0 && (
+                <Button 
+                  size="sm" 
+                  className="h-8"
+                  onClick={handleBulkRowEdit}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Редактировать строки
                 </Button>
               )}
               <Button 
@@ -337,17 +393,22 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                      className={`sticky left-0 z-10 w-14 h-12 bg-table-header border-r-2 border-b border-table-border text-sm text-center cursor-pointer font-semibold text-muted-foreground hover:bg-table-row-hover transition-colors select-none ${
                        isRowSelectedState ? 'bg-table-row-selected border-r-primary' : ''
                      }`}
-                     onClick={(e) => handleRowHeaderClick(campaign.id, rowIndex, e)}
+                     onMouseDown={(e) => handleRowHeaderMouseDown(campaign.id, rowIndex, e)}
+                     onMouseEnter={() => handleRowHeaderMouseEnter(campaign.id, rowIndex)}
+                     onClick={(e) => !isDraggingRows && handleRowHeaderClick(campaign.id, rowIndex, e)}
                    >
                      <div className="w-full h-full flex items-center justify-center">
-                       <div className={`w-4 h-4 border-2 rounded transition-colors ${
-                         isRowSelectedState ? 'bg-primary border-primary' : 'border-border'
-                       }`}>
-                         {isRowSelectedState && (
-                           <div className="w-full h-full flex items-center justify-center">
-                             <div className="w-2 h-2 bg-white rounded-sm"></div>
-                           </div>
-                         )}
+                       <div className="flex items-center gap-2">
+                         <div className={`w-3 h-3 border border-border rounded transition-colors ${
+                           isRowSelectedState ? 'bg-primary border-primary' : ''
+                         }`}>
+                           {isRowSelectedState && (
+                             <div className="w-full h-full flex items-center justify-center">
+                               <div className="w-1.5 h-1.5 bg-white rounded-sm"></div>
+                             </div>
+                           )}
+                         </div>
+                         <span className="text-xs">{rowIndex + 1}</span>
                        </div>
                      </div>
                    </td>
