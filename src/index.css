@@ -43,13 +43,14 @@ All colors MUST be HSL.
     --chat-ai-bg: 217 20% 96%;
     --chat-ai-text: 224 15% 20%;
 
-    /* Clean Table Colors - like image */
-    --table-section-header: 217 91% 60%;
-    --table-section-header-text: 0 0% 100%;
-    --table-header: 0 0% 100%;
-    --table-border: 220 13% 91%;
-    --table-row-hover: 0 0% 97%;
-    --table-status-text: 217 91% 60%;
+    /* Professional Table Colors - Airtable inspired */
+    --table-header: 240 6% 90%;
+    --table-header-border: 220 14% 85%;
+    --table-row-hover: 240 100% 98%;
+    --table-row-selected: 217 85% 94%;
+    --table-border: 220 14% 88%;
+    --table-cell-selected: 217 85% 90%;
+    --table-resize-handle: 217 91% 60%;
 
     --radius: 0.5rem;
 
@@ -106,13 +107,14 @@ All colors MUST be HSL.
     --chat-ai-bg: 224 25% 15%;
     --chat-ai-text: 217 25% 85%;
 
-    /* Clean Table Colors - like image (dark) */
-    --table-section-header: 217 91% 60%;
-    --table-section-header-text: 0 0% 100%;
-    --table-header: 224 25% 10%;
+    /* Professional Table Colors - Airtable inspired */
+    --table-header: 224 25% 12%;
+    --table-header-border: 224 25% 25%;
+    --table-row-hover: 224 25% 18%;
+    --table-row-selected: 224 25% 15%;
     --table-border: 224 25% 25%;
-    --table-row-hover: 224 25% 15%;
-    --table-status-text: 217 91% 60%;
+    --table-cell-selected: 224 35% 20%;
+    --table-resize-handle: 217 91% 60%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
