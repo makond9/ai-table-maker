@@ -188,27 +188,41 @@ const Index = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold mb-2">Таблица кампаний</h2>
-              <p className="text-sm text-muted-foreground">
-                Всего кампаний: {campaigns.length}
-              </p>
-            </div>
-            <GoogleSheetsTable
-              campaigns={campaigns}
-              onUpdateCampaign={handleUpdateCampaign}
-              onDeleteCampaign={handleDeleteCampaign}
-              isLaunched={isLaunched}
-            />
-            <div className="mt-4 flex justify-start">
-              <Button
-                onClick={handleAddNewRow}
-                size="icon"
-                className="rounded-full h-10 w-10 bg-primary hover:bg-primary/90"
-              >
-                <Plus className="h-5 w-5" />
-              </Button>
-            </div>
+            {campaigns.length > 0 ? (
+              <>
+                <div className="mb-4">
+                  <h2 className="text-xl font-semibold mb-2">Таблица кампаний</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Всего кампаний: {campaigns.length}
+                  </p>
+                </div>
+                <GoogleSheetsTable
+                  campaigns={campaigns}
+                  onUpdateCampaign={handleUpdateCampaign}
+                  onDeleteCampaign={handleDeleteCampaign}
+                  isLaunched={isLaunched}
+                />
+                <div className="mt-4 flex justify-start">
+                  <Button
+                    onClick={handleAddNewRow}
+                    size="icon"
+                    className="rounded-full h-10 w-10 bg-primary hover:bg-primary/90"
+                  >
+                    <Plus className="h-5 w-5" />
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-64 text-center">
+                <Bot className="h-16 w-16 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">
+                  Начните создавать кампании
+                </h3>
+                <p className="text-muted-foreground max-w-md">
+                  Напишите в чат описание кампании, которую хотите создать, и AI поможет вам её настроить
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="lg:col-span-1">
