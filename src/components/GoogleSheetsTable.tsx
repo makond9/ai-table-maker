@@ -35,6 +35,49 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
   
   const tableRef = useRef<HTMLDivElement>(null);
 
+  // Функция для определения границ выделения
+  const getSelectionBorders = (rowId: string, field: keyof Campaign) => {
+    if (selectedCells.length === 0) return '';
+    
+    const selectedPositions = selectedCells.map(cell => {
+      const rowIndex = campaigns.findIndex(c => c.id === cell.rowId);
+      const colIndex = editableFields.indexOf(cell.field);
+      return { rowIndex, colIndex, rowId: cell.rowId, field: cell.field };
+    }).filter(pos => pos.rowIndex !== -1 && pos.colIndex !== -1);
+
+    if (selectedPositions.length === 0) return '';
+
+    const currentRowIndex = campaigns.findIndex(c => c.id === rowId);
+    const currentColIndex = editableFields.indexOf(field);
+    
+    if (currentRowIndex === -1 || currentColIndex === -1) return '';
+
+    const isSelected = selectedPositions.some(pos => 
+      pos.rowIndex === currentRowIndex && pos.colIndex === currentColIndex
+    );
+
+    if (!isSelected) return '';
+
+    // Найти границы выделения
+    const minRow = Math.min(...selectedPositions.map(p => p.rowIndex));
+    const maxRow = Math.max(...selectedPositions.map(p => p.rowIndex));
+    const minCol = Math.min(...selectedPositions.map(p => p.colIndex));
+    const maxCol = Math.max(...selectedPositions.map(p => p.colIndex));
+
+    let borders = [];
+    
+    // Верхняя граница
+    if (currentRowIndex === minRow) borders.push('border-t-2 border-t-primary');
+    // Нижняя граница  
+    if (currentRowIndex === maxRow) borders.push('border-b-2 border-b-primary');
+    // Левая граница
+    if (currentColIndex === minCol) borders.push('border-l-2 border-l-primary');
+    // Правая граница
+    if (currentColIndex === maxCol) borders.push('border-r-2 border-r-primary');
+
+    return borders.join(' ');
+  };
+
   const getFieldOptions = (field: keyof Campaign) => {
     switch (field) {
       case 'trafficAccount':
@@ -407,21 +450,21 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                      const isSelected = isCellSelected(campaign.id, col.key);
                      
                      return (
-                       <td 
-                         key={col.key}
-                         className={`relative h-12 border-r border-b border-table-border px-4 text-sm cursor-cell select-none transition-all duration-150 font-medium ${
-                           isSelected 
-                             ? 'bg-table-cell-selected ring-2 ring-inset ring-primary shadow-inner' 
-                             : 'hover:bg-table-row-hover'
-                         } ${isRowSelectedState ? 'bg-table-row-selected' : ''}`}
-                         style={{ 
-                           width: columnWidths[col.key] || 150,
-                           minWidth: columnWidths[col.key] || 150 
-                         }}
-                         onMouseDown={(e) => handleMouseDown(campaign.id, col.key, rowIndex, colIndex, e)}
-                         onMouseEnter={() => handleMouseEnter(campaign.id, col.key, rowIndex, colIndex)}
-                         onClick={(e) => !isDragging && handleCellClick(campaign.id, col.key, rowIndex, colIndex, e)}
-                       >
+                        <td 
+                          key={col.key}
+                          className={`relative h-12 border-r border-b border-table-border px-4 text-sm cursor-cell select-none transition-all duration-150 font-medium ${
+                            isSelected 
+                              ? `bg-table-cell-selected ${getSelectionBorders(campaign.id, col.key)}` 
+                              : 'hover:bg-table-row-hover'
+                          } ${isRowSelectedState ? 'bg-table-row-selected' : ''}`}
+                          style={{ 
+                            width: columnWidths[col.key] || 150,
+                            minWidth: columnWidths[col.key] || 150 
+                          }}
+                          onMouseDown={(e) => handleMouseDown(campaign.id, col.key, rowIndex, colIndex, e)}
+                          onMouseEnter={() => handleMouseEnter(campaign.id, col.key, rowIndex, colIndex)}
+                          onClick={(e) => !isDragging && handleCellClick(campaign.id, col.key, rowIndex, colIndex, e)}
+                        >
                          {col.key === 'campaignUrl' && campaign.campaignUrl ? (
                           <div className="flex items-center gap-2">
                             <Button
