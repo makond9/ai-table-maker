@@ -394,7 +394,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                        isRowSelectedState ? 'bg-table-row-selected border-r-primary' : ''
                      }`}
                      onMouseDown={(e) => handleRowHeaderMouseDown(campaign.id, rowIndex, e)}
-                     onMouseEnter={() => handleRowHeaderMouseEnter(campaign.id, rowIndex)}
+                     onMouseEnter={() => isDraggingRows && handleRowHeaderMouseEnter(campaign.id, rowIndex)}
                      onClick={(e) => !isDraggingRows && handleRowHeaderClick(campaign.id, rowIndex, e)}
                    >
                      <div className="w-full h-full flex items-center justify-center">
