@@ -144,9 +144,15 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
         <header className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <Bot className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">AI Менеджер кампаний</h1>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <Bot className="h-8 w-8 text-primary" />
+              <h1 className="text-3xl font-bold">AI Менеджер кампаний</h1>
+            </div>
+            <div className="flex flex-col items-end">
+              <div className="text-sm font-medium text-foreground">Байер: Alex</div>
+              <div className="text-xs text-muted-foreground">ID: alex_v</div>
+            </div>
           </div>
           <p className="text-muted-foreground">
             Управляйте рекламными кампаниями с помощью естественного языка
