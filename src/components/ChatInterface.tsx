@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Send, Bot, User, Settings, Play, Cog, Sparkles, Zap } from 'lucide-react';
 import { CommandManager } from './CommandManager';
 import { ApiKeyDialog } from './ApiKeyDialog';
+import { AIThinkingAnimation } from './AIThinkingAnimation';
 import { aiService } from '@/services/aiService';
 
 interface Message {
@@ -22,9 +23,11 @@ interface ChatInterfaceProps {
   onAIParseMessage?: (message: string) => Promise<void>;
   needsConfirmation?: boolean;
   onConfirmLaunch?: () => void;
+  showThinking?: boolean;
+  onThinkingComplete?: () => void;
 }
 
-export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns, onAIParseMessage, needsConfirmation, onConfirmLaunch }: ChatInterfaceProps) {
+export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns, onAIParseMessage, needsConfirmation, onConfirmLaunch, showThinking, onThinkingComplete }: ChatInterfaceProps) {
   const [mainMessages, setMainMessages] = useState<Message[]>([
     {
       id: '1',
@@ -180,6 +183,10 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns, 
             )}
           </div>
         ))}
+        
+        {showThinking && (
+          <AIThinkingAnimation onComplete={onThinkingComplete} />
+        )}
       </div>
     </ScrollArea>
   );

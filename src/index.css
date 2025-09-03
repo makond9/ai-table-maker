@@ -43,16 +43,15 @@ All colors MUST be HSL.
     --chat-ai-bg: 217 20% 96%;
     --chat-ai-text: 224 15% 20%;
 
-    /* Beautiful Blue Table Colors - Based on screenshot */
-    --table-header: 220 100% 70%;
-    --table-header-border: 220 60% 60%;
-    --table-row-hover: 220 100% 95%;
-    --table-row-selected: 220 100% 90%;
-    --table-border: 220 40% 85%;
-    --table-cell-selected: 220 80% 85%;
-    --table-resize-handle: 220 100% 60%;
-    --table-gradient: linear-gradient(135deg, hsl(220, 100%, 70%), hsl(200, 100%, 75%));
-    --table-header-text: 0 0% 100%;
+    /* Clean Table Colors - Site style */
+    --table-header: 217 20% 96%;
+    --table-header-border: 217 20% 88%;
+    --table-row-hover: 217 50% 98%;
+    --table-row-selected: 217 85% 94%;
+    --table-border: 217 20% 92%;
+    --table-cell-selected: 217 85% 90%;
+    --table-resize-handle: 217 91% 60%;
+    --table-header-text: 224 15% 20%;
 
     --radius: 0.5rem;
 
@@ -109,16 +108,15 @@ All colors MUST be HSL.
     --chat-ai-bg: 224 25% 15%;
     --chat-ai-text: 217 25% 85%;
 
-    /* Beautiful Blue Table Colors - Dark mode */
-    --table-header: 220 70% 35%;
-    --table-header-border: 220 50% 45%;
-    --table-row-hover: 220 40% 15%;
-    --table-row-selected: 220 50% 20%;
-    --table-border: 220 30% 25%;
-    --table-cell-selected: 220 60% 25%;
-    --table-resize-handle: 220 80% 55%;
-    --table-gradient: linear-gradient(135deg, hsl(220, 70%, 35%), hsl(200, 70%, 40%));
-    --table-header-text: 0 0% 100%;
+    /* Clean Table Colors - Dark mode */
+    --table-header: 224 25% 15%;
+    --table-header-border: 224 25% 25%;
+    --table-row-hover: 224 25% 18%;
+    --table-row-selected: 224 25% 20%;
+    --table-border: 224 25% 25%;
+    --table-cell-selected: 224 35% 25%;
+    --table-resize-handle: 217 91% 60%;
+    --table-header-text: 217 25% 85%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

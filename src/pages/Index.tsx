@@ -280,11 +280,9 @@ const Index = () => {
             onAIParseMessage={handleAIParseMessage}
             needsConfirmation={needsConfirmation}
             onConfirmLaunch={handleConfirmLaunch}
+            showThinking={showThinking}
+            onThinkingComplete={handleThinkingComplete}
           />
-          
-          {showThinking && (
-            <AIThinkingAnimation onComplete={handleThinkingComplete} />
-          )}
             </div>
           </div>
         </div>
