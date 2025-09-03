@@ -199,28 +199,10 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns, 
           </div>
         </div>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="main" className="flex items-center gap-2">
-              <Bot className="h-4 w-4" />
-              Основной чат
-            </TabsTrigger>
-            <TabsTrigger value="admin" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Админ чат
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-        <TabsContent value="main" className="flex-1 flex flex-col m-0">
-          {renderMessages(mainMessages)}
-        </TabsContent>
-        
-        <TabsContent value="admin" className="flex-1 flex flex-col m-0">
-          {renderMessages(adminMessages)}
-        </TabsContent>
+      <div className="flex-1 flex flex-col">
+        {renderMessages(mainMessages)}
 
         <div className="p-4 border-t border-border">
           {hasCampaigns && (
@@ -239,7 +221,7 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns, 
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={activeTab === 'main' ? "Опишите кампанию которую хотите создать..." : "Введите админ команду..."}
+              placeholder="Опишите кампанию которую хотите создать..."
               className="flex-1"
               disabled={isProcessing}
             />
@@ -248,7 +230,7 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns, 
             </Button>
           </div>
         </div>
-      </Tabs>
+      </div>
       
       <CommandManager 
         isOpen={isCommandManagerOpen}

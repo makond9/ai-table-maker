@@ -6,7 +6,7 @@ import { parseMessage, generateAIResponse, parseBulkUpdateCommand, generateBulkU
 import { aiService } from '@/services/aiService';
 import { toast } from 'sonner';
 import { useToast } from '@/hooks/use-toast';
-import { Bot, User, LogOut } from 'lucide-react';
+import { Bot, User, LogOut, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Index = () => {
@@ -125,6 +125,24 @@ const Index = () => {
     });
   };
 
+  const handleAddNewRow = () => {
+    const newCampaign: Campaign = {
+      id: crypto.randomUUID(),
+      trafficAccount: 'Мета',
+      offer: '',
+      country: '',
+      rk: 'РК-001',
+      pixel: 'Facebook Pixel',
+      createdAt: new Date()
+    };
+    
+    setCampaigns(prev => [...prev, newCampaign]);
+    toast({
+      title: "Новая строка добавлена",
+      description: "Заполните данные кампании",
+    });
+  };
+
   const handleLaunchCampaigns = () => {
     const launchedCampaigns = campaigns.map(campaign => ({
       ...campaign,
@@ -171,10 +189,21 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <div className="mb-4">
-              <h2 className="text-xl font-semibold mb-2">Таблица кампаний</h2>
-              <p className="text-sm text-muted-foreground">
-                Всего кампаний: {campaigns.length}
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold mb-2">Таблица кампаний</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Всего кампаний: {campaigns.length}
+                  </p>
+                </div>
+                <Button
+                  onClick={handleAddNewRow}
+                  size="icon"
+                  className="rounded-full h-10 w-10 bg-primary hover:bg-primary/90"
+                >
+                  <Plus className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
             <GoogleSheetsTable
               campaigns={campaigns}
