@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Trash2, Edit, Copy } from 'lucide-react';
 import { CellEditDialog } from './CellEditDialog';
+import { RowEditDialog } from './RowEditDialog';
 
 interface GoogleSheetsTableProps {
   campaigns: Campaign[];
@@ -23,6 +24,8 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
   const [editingCell, setEditingCell] = useState<SelectedCell | null>(null);
   const [editValue, setEditValue] = useState('');
   const [cellEditOpen, setCellEditOpen] = useState(false);
+  const [rowEditOpen, setRowEditOpen] = useState(false);
+  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const [columnWidths, setColumnWidths] = useState<{ [key: string]: number }>({});
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ row: number; col: number } | null>(null);
@@ -171,6 +174,15 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
       onUpdateCampaign(update.rowId, { [update.field]: update.value });
     });
     setSelectedCells([]);
+  };
+
+  const handleRowEdit = (campaign: Campaign) => {
+    setEditingCampaign(campaign);
+    setRowEditOpen(true);
+  };
+
+  const handleRowSave = (campaignId: string, updates: Partial<Campaign>) => {
+    onUpdateCampaign(campaignId, updates);
   };
 
   // Обработка drag selection
@@ -426,7 +438,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                          <Button
                            size="sm"
                            variant="ghost"
-                           onClick={() => handleCellDoubleClick(campaign.id, 'trafficAccount')}
+                           onClick={() => handleRowEdit(campaign)}
                            className="h-7 w-7 p-0 hover:bg-primary/10 hover:text-primary transition-colors"
                          >
                            <Edit className="h-3 w-3" />
@@ -473,6 +485,13 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
         selectedCells={selectedCells}
         campaigns={campaigns}
         onCellUpdate={handleCellUpdate}
+      />
+      
+      <RowEditDialog
+        open={rowEditOpen}
+        onOpenChange={setRowEditOpen}
+        campaign={editingCampaign}
+        onSave={handleRowSave}
       />
     </div>
   );
