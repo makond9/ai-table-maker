@@ -420,20 +420,28 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                   })}
 
                   {/* Действия */}
-                  {!isLaunched && (
-                    <td className="h-11 border-b border-table-border px-3">
-                      <div className="flex items-center justify-center h-full">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => onDeleteCampaign(campaign.id)}
-                          className="h-7 w-7 p-0 hover:bg-destructive/10 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </td>
-                  )}
+                   {!isLaunched && (
+                     <td className="h-11 border-b border-table-border px-3">
+                       <div className="flex items-center justify-center gap-1 h-full">
+                         <Button
+                           size="sm"
+                           variant="ghost"
+                           onClick={() => handleCellDoubleClick(campaign.id, 'trafficAccount')}
+                           className="h-7 w-7 p-0 hover:bg-primary/10 hover:text-primary transition-colors"
+                         >
+                           <Edit className="h-3 w-3" />
+                         </Button>
+                         <Button
+                           size="sm"
+                           variant="ghost"
+                           onClick={() => onDeleteCampaign(campaign.id)}
+                           className="h-7 w-7 p-0 hover:bg-destructive/10 hover:text-destructive transition-colors"
+                         >
+                           <Trash2 className="h-3 w-3" />
+                         </Button>
+                       </div>
+                     </td>
+                   )}
                 </tr>
               );
             })}
