@@ -387,21 +387,27 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
           {/* Заголовок */}
           <thead>
             <tr>
-              <th className="sticky top-0 left-0 z-20 w-14 h-12 bg-table-header border-r-2 border-b-2 border-table-header-border text-xs font-semibold text-muted-foreground">
+              <th 
+                className="sticky top-0 left-0 z-20 w-14 h-12 border-r-2 border-b-2 border-table-header-border text-xs font-semibold"
+                style={{ 
+                  background: 'var(--table-gradient)'
+                }}
+              >
                 <div className="w-full h-full flex items-center justify-center hover:bg-table-row-hover transition-colors cursor-pointer select-none">
-                  <div className="w-4 h-4 border-2 border-border rounded"></div>
+                  <div className="w-4 h-4 border-2 border-white/50 rounded"></div>
                 </div>
               </th>
               {columns.map((col, index) => (
                 <th 
                   key={col.key} 
-                  className="sticky top-0 z-10 h-12 bg-table-header border-r-2 border-b-2 border-table-header-border text-sm font-semibold text-foreground px-4 hover:bg-table-row-hover transition-colors relative group"
+                  className="sticky top-0 z-10 h-12 border-r-2 border-b-2 border-table-header-border text-sm font-semibold px-4 hover:bg-table-row-hover transition-colors relative group"
                   style={{ 
                     width: columnWidths[col.key] || 150,
-                    minWidth: columnWidths[col.key] || 150 
+                    minWidth: columnWidths[col.key] || 150,
+                    background: 'var(--table-gradient)'
                   }}
                 >
-                  <div className="flex items-center justify-start h-full select-none cursor-pointer truncate font-medium">
+                  <div className="flex items-center justify-start h-full select-none cursor-pointer truncate font-medium text-table-header-text">
                     {col.label}
                   </div>
                   {/* Ресайзер колонки */}
@@ -412,8 +418,13 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                 </th>
               ))}
               {!isLaunched && (
-                <th className="sticky top-0 z-10 w-28 h-12 bg-table-header border-b-2 border-table-header-border text-sm font-semibold text-foreground select-none">
-                  <div className="flex items-center justify-center h-full">
+                <th 
+                  className="sticky top-0 z-10 w-28 h-12 border-b-2 border-table-header-border text-sm font-semibold select-none"
+                  style={{ 
+                    background: 'var(--table-gradient)'
+                  }}
+                >
+                  <div className="flex items-center justify-center h-full text-table-header-text">
                     Действия
                   </div>
                 </th>

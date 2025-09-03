@@ -66,7 +66,8 @@ export default {
 					'row-selected': 'hsl(var(--table-row-selected))',
 					border: 'hsl(var(--table-border))',
 					'cell-selected': 'hsl(var(--table-cell-selected))',
-					'resize-handle': 'hsl(var(--table-resize-handle))'
+					'resize-handle': 'hsl(var(--table-resize-handle))',
+					'header-text': 'hsl(var(--table-header-text))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
