@@ -247,8 +247,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
         { key: 'offer' as keyof Campaign, label: 'Оффер', editable: true },
         { key: 'country' as keyof Campaign, label: 'Страна', editable: true },
         { key: 'rk' as keyof Campaign, label: 'РК', editable: true },
-        { key: 'pixel' as keyof Campaign, label: 'Пиксель', editable: true },
-        { key: 'createdAt' as keyof Campaign, label: 'Создано', editable: false }
+        { key: 'pixel' as keyof Campaign, label: 'Пиксель', editable: true }
       ];
 
   return (
@@ -411,15 +410,11 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                               {campaign.campaignUrl}
                             </span>
                           </div>
-                        ) : col.key === 'createdAt' ? (
-                          <span className="text-muted-foreground font-mono text-xs">
-                            {(campaign[col.key] as Date).toLocaleDateString('ru-RU')}
-                          </span>
-                        ) : (
-                          <span className="block truncate text-foreground">
-                            {String(campaign[col.key] || '-')}
-                          </span>
-                        )}
+                         ) : (
+                           <span className="text-foreground truncate">
+                             {String(campaign[col.key] || 'Нужно уточнить')}
+                           </span>
+                         )}
                       </td>
                     );
                   })}

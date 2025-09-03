@@ -87,11 +87,11 @@ const Index = () => {
     if (parsedCampaigns.length > 0) {
       const newCampaigns: Campaign[] = parsedCampaigns.map(partial => ({
         id: Date.now().toString() + Math.random(),
-        trafficAccount: partial.trafficAccount!,
-        offer: partial.offer!,
-        country: partial.country!,
-        rk: partial.rk || 'РК-001',
-        pixel: partial.pixel || 'Facebook Pixel',
+        trafficAccount: partial.trafficAccount || 'Мета',
+        offer: partial.offer || '',
+        country: partial.country || '',
+        rk: partial.rk || '',
+        pixel: partial.pixel || '',
         createdAt: new Date()
       }));
 
@@ -131,8 +131,8 @@ const Index = () => {
       trafficAccount: 'Мета',
       offer: '',
       country: '',
-      rk: 'РК-001',
-      pixel: 'Facebook Pixel',
+      rk: '',
+      pixel: '',
       createdAt: new Date()
     };
     
