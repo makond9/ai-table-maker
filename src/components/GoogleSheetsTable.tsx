@@ -21,8 +21,6 @@ interface SelectedCell {
 export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaign, isLaunched = false }: GoogleSheetsTableProps) {
   const [selectedCells, setSelectedCells] = useState<SelectedCell[]>([]);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [editingCell, setEditingCell] = useState<SelectedCell | null>(null);
-  const [editValue, setEditValue] = useState('');
   const [cellEditOpen, setCellEditOpen] = useState(false);
   const [rowEditOpen, setRowEditOpen] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
@@ -146,24 +144,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
     setSelectedCells([]);
   };
 
-  const handleCellDoubleClick = (rowId: string, field: keyof Campaign) => {
-    // Разрешаем редактирование только для определенных полей
-    if (!editableFields.includes(field)) return;
-    
-    const campaign = campaigns.find(c => c.id === rowId);
-    if (campaign) {
-      setEditingCell({ rowId, field });
-      setEditValue(String(campaign[field]));
-    }
-  };
 
-  const handleEditSave = () => {
-    if (editingCell && editValue) {
-      onUpdateCampaign(editingCell.rowId, { [editingCell.field]: editValue });
-    }
-    setEditingCell(null);
-    setEditValue('');
-  };
 
   const handleBulkCellEdit = () => {
     setCellEditOpen(true);
@@ -352,63 +333,46 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                   }`}
                 >
                   {/* Заголовок строки */}
-                  <td 
-                    className={`sticky left-0 z-10 w-14 h-12 bg-table-header border-r-2 border-b border-table-border text-sm text-center cursor-pointer font-semibold text-muted-foreground hover:bg-table-row-hover transition-colors select-none ${
-                      isRowSelectedState ? 'bg-table-row-selected' : ''
-                    }`}
-                    onClick={(e) => handleRowHeaderClick(campaign.id, rowIndex, e)}
-                  >
-                    <div className="w-full h-full flex items-center justify-center">
-                      {rowIndex + 1}
-                    </div>
-                  </td>
+                   <td 
+                     className={`sticky left-0 z-10 w-14 h-12 bg-table-header border-r-2 border-b border-table-border text-sm text-center cursor-pointer font-semibold text-muted-foreground hover:bg-table-row-hover transition-colors select-none ${
+                       isRowSelectedState ? 'bg-table-row-selected border-r-primary' : ''
+                     }`}
+                     onClick={(e) => handleRowHeaderClick(campaign.id, rowIndex, e)}
+                   >
+                     <div className="w-full h-full flex items-center justify-center">
+                       <div className={`w-4 h-4 border-2 rounded transition-colors ${
+                         isRowSelectedState ? 'bg-primary border-primary' : 'border-border'
+                       }`}>
+                         {isRowSelectedState && (
+                           <div className="w-full h-full flex items-center justify-center">
+                             <div className="w-2 h-2 bg-white rounded-sm"></div>
+                           </div>
+                         )}
+                       </div>
+                     </div>
+                   </td>
 
                   {/* Ячейки данных */}
-                  {columns.map((col, colIndex) => {
-                    const isSelected = isCellSelected(campaign.id, col.key);
-                    const isEditing = editingCell?.rowId === campaign.id && editingCell?.field === col.key;
-                    
-                    return (
-                      <td 
-                        key={col.key}
-                        className={`relative h-12 border-r border-b border-table-border px-4 text-sm cursor-cell select-none transition-all duration-150 font-medium ${
-                          isSelected 
-                            ? 'bg-table-cell-selected ring-2 ring-inset ring-primary shadow-inner' 
-                            : 'hover:bg-table-row-hover'
-                        } ${isRowSelectedState ? 'bg-table-row-selected' : ''}`}
-                        style={{ 
-                          width: columnWidths[col.key] || 150,
-                          minWidth: columnWidths[col.key] || 150 
-                        }}
-                        onMouseDown={(e) => handleMouseDown(campaign.id, col.key, rowIndex, colIndex, e)}
-                        onMouseEnter={() => handleMouseEnter(campaign.id, col.key, rowIndex, colIndex)}
-                        onClick={(e) => !isDragging && handleCellClick(campaign.id, col.key, rowIndex, colIndex, e)}
-                        onDoubleClick={() => handleCellDoubleClick(campaign.id, col.key)}
-                      >
-                        {isEditing ? (
-                          <div className="absolute inset-0 z-20">
-                            <Select
-                              value={editValue}
-                              onValueChange={setEditValue}
-                              onOpenChange={(open) => {
-                                if (!open) {
-                                  handleEditSave();
-                                }
-                              }}
-                            >
-                              <SelectTrigger className="h-full border-none rounded-none bg-white shadow-lg">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="z-50">
-                                {getFieldOptions(col.key).map((option) => (
-                                  <SelectItem key={option} value={option}>
-                                    {option}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        ) : col.key === 'campaignUrl' && campaign.campaignUrl ? (
+                   {columns.map((col, colIndex) => {
+                     const isSelected = isCellSelected(campaign.id, col.key);
+                     
+                     return (
+                       <td 
+                         key={col.key}
+                         className={`relative h-12 border-r border-b border-table-border px-4 text-sm cursor-cell select-none transition-all duration-150 font-medium ${
+                           isSelected 
+                             ? 'bg-table-cell-selected ring-2 ring-inset ring-primary shadow-inner' 
+                             : 'hover:bg-table-row-hover'
+                         } ${isRowSelectedState ? 'bg-table-row-selected' : ''}`}
+                         style={{ 
+                           width: columnWidths[col.key] || 150,
+                           minWidth: columnWidths[col.key] || 150 
+                         }}
+                         onMouseDown={(e) => handleMouseDown(campaign.id, col.key, rowIndex, colIndex, e)}
+                         onMouseEnter={() => handleMouseEnter(campaign.id, col.key, rowIndex, colIndex)}
+                         onClick={(e) => !isDragging && handleCellClick(campaign.id, col.key, rowIndex, colIndex, e)}
+                       >
+                         {col.key === 'campaignUrl' && campaign.campaignUrl ? (
                           <div className="flex items-center gap-2">
                             <Button
                               variant="ghost"
