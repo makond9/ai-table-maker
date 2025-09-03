@@ -188,17 +188,6 @@ export function ChatInterface({ onSendMessage, onLaunchCampaigns, hasCampaigns, 
             {isAiEnabled && <Zap className="h-4 w-4 text-green-500" />}
           </h3>
           <div className="flex gap-2">
-            {!isAiEnabled && (
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setIsApiKeyDialogOpen(true)}
-                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-              >
-                <Sparkles className="w-4 h-4 mr-2" />
-                Подключить AI
-              </Button>
-            )}
             <Button 
               variant="outline" 
               size="sm"

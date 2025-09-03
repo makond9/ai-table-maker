@@ -6,7 +6,8 @@ import { parseMessage, generateAIResponse, parseBulkUpdateCommand, generateBulkU
 import { aiService } from '@/services/aiService';
 import { toast } from 'sonner';
 import { useToast } from '@/hooks/use-toast';
-import { Bot } from 'lucide-react';
+import { Bot, User, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -149,9 +150,17 @@ const Index = () => {
               <Bot className="h-8 w-8 text-primary" />
               <h1 className="text-3xl font-bold">AI Менеджер кампаний</h1>
             </div>
-            <div className="flex flex-col items-end">
-              <div className="text-sm font-medium text-foreground">Байер: Alex</div>
-              <div className="text-xs text-muted-foreground">ID: alex_v</div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 px-3 py-2 bg-muted rounded-lg">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <div className="flex flex-col">
+                  <div className="text-sm font-medium text-foreground">Alex</div>
+                  <div className="text-xs text-muted-foreground">alex_v</div>
+                </div>
+              </div>
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                <LogOut className="h-4 w-4" />
+              </Button>
             </div>
           </div>
           <p className="text-muted-foreground">
