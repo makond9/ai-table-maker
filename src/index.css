@@ -124,6 +124,25 @@ All colors MUST be HSL.
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  /* Typing effect styles */
+  .typing-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .typing-cursor {
+    display: inline-block;
+    color: hsl(var(--primary));
+    animation: blink 1s infinite;
+    margin-left: 2px;
+    font-weight: 400;
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
 }
 
 @layer base {
