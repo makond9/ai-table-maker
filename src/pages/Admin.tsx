@@ -13,28 +13,28 @@ const Admin = () => {
     toast
   } = useToast();
   const availableMacros = [{
-    macro: '{date}',
+    macro: 'date',
     description: 'Текущая дата'
   }, {
-    macro: '{buyers_name}',
+    macro: 'buyers_name',
     description: 'Имя покупателя'
   }, {
-    macro: '{offer_name}',
+    macro: 'offer_name',
     description: 'Название оффера'
   }, {
-    macro: '{traffic_account}',
+    macro: 'traffic_account',
     description: 'Трафиковый аккаунт'
   }, {
-    macro: '{country}',
+    macro: 'country',
     description: 'Страна'
   }, {
-    macro: '{rk}',
+    macro: 'rk',
     description: 'РК'
   }, {
-    macro: '{pixel}',
+    macro: 'pixel',
     description: 'Пиксель'
   }, {
-    macro: '{campaign_id}',
+    macro: 'campaign_id',
     description: 'ID кампании'
   }];
   const handleSave = () => {
