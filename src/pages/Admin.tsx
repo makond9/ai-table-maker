@@ -8,33 +8,33 @@ import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 const Admin = () => {
-  const [campaignNameTemplate, setCampaignNameTemplate] = useState('{offer_name}_{country}_{date}_{buyers_name}');
+  const [campaignNameTemplate, setCampaignNameTemplate] = useState('название_оффера_страна_дата_имя_покупателя');
   const {
     toast
   } = useToast();
   const availableMacros = [{
-    macro: 'date',
+    macro: 'дата',
     description: 'Текущая дата'
   }, {
-    macro: 'buyers_name',
+    macro: 'имя_покупателя',
     description: 'Имя покупателя'
   }, {
-    macro: 'offer_name',
+    macro: 'название_оффера',
     description: 'Название оффера'
   }, {
-    macro: 'traffic_account',
+    macro: 'трафиковый_аккаунт',
     description: 'Трафиковый аккаунт'
   }, {
-    macro: 'country',
+    macro: 'страна',
     description: 'Страна'
   }, {
-    macro: 'rk',
+    macro: 'рк',
     description: 'РК'
   }, {
-    macro: 'pixel',
+    macro: 'пиксель',
     description: 'Пиксель'
   }, {
-    macro: 'campaign_id',
+    macro: 'ид_кампании',
     description: 'ID кампании'
   }];
   const handleSave = () => {
@@ -46,7 +46,7 @@ const Admin = () => {
   const insertMacro = (macro: string) => {
     setCampaignNameTemplate(prev => prev + macro);
   };
-  const previewExample = campaignNameTemplate.replace('{date}', '2024-01-15').replace('{buyers_name}', 'alex_v').replace('{offer_name}', 'Финансы').replace('{traffic_account}', 'Мета').replace('{country}', 'Россия').replace('{rk}', 'РК-001').replace('{pixel}', 'Facebook Pixel').replace('{campaign_id}', 'abc123');
+  const previewExample = campaignNameTemplate.replace('дата', '2024-01-15').replace('имя_покупателя', 'alex_v').replace('название_оффера', 'Финансы').replace('трафиковый_аккаунт', 'Мета').replace('страна', 'Россия').replace('рк', 'РК-001').replace('пиксель', 'Facebook Pixel').replace('ид_кампании', 'abc123');
   return <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
         <header className="mb-8">
