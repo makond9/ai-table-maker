@@ -403,159 +403,126 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
         </div>
       )}
 
-      {/* Таблица в стиле Google Sheets */}
-      <div className="overflow-auto" ref={tableRef} onMouseUp={handleMouseUp}>
-        <table className="w-full border-collapse bg-card">
-          {/* Заголовок */}
-          <thead>
-            <tr>
-              <th className="sticky top-0 left-0 z-20 w-14 h-12 bg-table-header border-r-2 border-b-2 border-table-header-border text-xs font-semibold text-muted-foreground">
-                <div className="w-full h-full flex items-center justify-center hover:bg-table-row-hover transition-colors cursor-pointer select-none">
-                  <div className="w-4 h-4 border-2 border-border rounded"></div>
-                </div>
-              </th>
-              {columns.map((col, index) => (
-                <th 
-                  key={col.key} 
-                  className="sticky top-0 z-10 h-12 bg-table-header border-r-2 border-b-2 border-table-header-border text-sm font-semibold text-foreground px-4 hover:bg-table-row-hover transition-colors relative group"
-                  style={{ 
-                    width: columnWidths[col.key] || 150,
-                    minWidth: columnWidths[col.key] || 150 
-                  }}
-                >
-                  <div className="flex items-center justify-start h-full select-none cursor-pointer truncate font-medium">
-                    {col.label}
-                  </div>
-                  {/* Ресайзер колонки */}
-                  <div 
-                    className="absolute right-0 top-0 w-1 h-full cursor-col-resize bg-transparent hover:bg-table-resize-handle transition-colors opacity-0 group-hover:opacity-100"
-                    onMouseDown={(e) => handleColumnResize(col.key, e)}
-                  />
-                </th>
-              ))}
-              {!isLaunched && (
-                <th className="sticky top-0 z-10 w-28 h-12 bg-table-header border-b-2 border-table-header-border text-sm font-semibold text-foreground select-none">
-                  <div className="flex items-center justify-center h-full">
-                    Действия
-                  </div>
-                </th>
-              )}
-            </tr>
-          </thead>
+      {/* Карточки кампаний */}
+      <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+        {campaigns.map((campaign, rowIndex) => {
+          const isRowSelectedState = isRowSelected(campaign.id);
+          return (
+            <div 
+              key={campaign.id}
+              className={`relative p-4 rounded-lg border bg-card transition-all duration-200 ${
+                isRowSelectedState 
+                  ? 'border-primary bg-table-row-selected shadow-md' 
+                  : 'border-table-border hover:border-primary/30 hover:shadow-sm'
+              }`}
+              onClick={(e) => !isDragging && handleRowHeaderClick(campaign.id, rowIndex, e)}
+            >
+              {/* Номер строки в углу */}
+              <div className="absolute -top-2 -left-2 w-6 h-6 bg-table-header border border-table-border rounded-full flex items-center justify-center text-xs font-medium text-muted-foreground">
+                {rowIndex + 1}
+              </div>
 
-          {/* Тело таблицы */}
-          <tbody>
-            {campaigns.map((campaign, rowIndex) => {
-              const isRowSelectedState = isRowSelected(campaign.id);
-              return (
-                 <tr 
-                  key={campaign.id}
-                  className={`group hover:bg-table-row-hover transition-colors ${
-                    isRowSelectedState ? 'bg-table-row-selected' : ''
-                  }`}
-                >
-                  {/* Заголовок строки */}
-                   <td 
-                     className={`sticky left-0 z-10 w-14 h-12 bg-table-header border-r-2 border-b border-table-border text-sm text-center cursor-pointer font-semibold text-muted-foreground hover:bg-table-row-hover transition-colors select-none ${
-                       isRowSelectedState ? 'bg-table-row-selected border-r-primary' : ''
-                     }`}
-                     onMouseDown={(e) => handleRowHeaderMouseDown(campaign.id, rowIndex, e)}
-                     onMouseEnter={() => isDraggingRows && handleRowHeaderMouseEnter(campaign.id, rowIndex)}
-                     onClick={(e) => !isDraggingRows && handleRowHeaderClick(campaign.id, rowIndex, e)}
-                   >
-                     <div className="w-full h-full flex items-center justify-center">
-                       <span className="text-xs font-medium">{rowIndex + 1}</span>
-                     </div>
-                   </td>
-
-                  {/* Ячейки данных */}
-                   {columns.map((col, colIndex) => {
-                     const isSelected = isCellSelected(campaign.id, col.key);
-                     
-                     return (
-                        <td 
-                          key={col.key}
-                          className={`relative h-12 border-r border-b border-table-border px-4 text-sm cursor-cell select-none transition-all duration-150 font-medium ${
-                            isSelected 
-                              ? `bg-table-cell-selected ${getSelectionBorders(campaign.id, col.key)}` 
-                              : 'hover:bg-table-row-hover'
-                          } ${isRowSelectedState ? 'bg-table-row-selected' : ''}`}
-                          style={{ 
-                            width: columnWidths[col.key] || 150,
-                            minWidth: columnWidths[col.key] || 150 
-                          }}
-                          onMouseDown={(e) => handleMouseDown(campaign.id, col.key, rowIndex, colIndex, e)}
-                          onMouseEnter={() => handleMouseEnter(campaign.id, col.key, rowIndex, colIndex)}
-                          onClick={(e) => !isDragging && handleCellClick(campaign.id, col.key, rowIndex, colIndex, e)}
-                          onDoubleClick={(e) => handleCellDoubleClick(campaign.id, col.key, e)}
-                        >
-                          {col.key === 'campaignUrl' ? (
-                            <CampaignLinkStatus campaignId={campaign.id} />
-                          ) : activeDropdown?.rowId === campaign.id && activeDropdown?.field === col.key ? (
-                            <Popover open={true} onOpenChange={(open) => !open && setActiveDropdown(null)}>
-                              <PopoverTrigger asChild>
-                                <div className="w-full h-full"></div>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-48 p-1 bg-popover border border-border shadow-lg z-50" align="start">
-                                <div className="max-h-48 overflow-y-auto">
-                                  {getFieldOptions(col.key).map((option) => (
-                                    <div
-                                      key={option}
-                                      className="px-3 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors"
-                                      onClick={() => handleDropdownSelect(option)}
-                                    >
-                                      {option}
-                                    </div>
-                                  ))}
-                                </div>
-                              </PopoverContent>
-                            </Popover>
-                           ) : (
-                              <div className={`flex items-center justify-between w-full ${
-                                !campaign[col.key] || String(campaign[col.key]).trim() === '' 
-                                  ? 'bg-table-empty-cell' 
-                                  : ''
-                              }`}>
-                                <span className="text-foreground truncate">
-                                   {campaign[col.key] ? String(campaign[col.key]) : ''}
-                                </span>
-                                {!isLaunched && editableFields.includes(col.key) && activeDropdown?.rowId === campaign.id && activeDropdown?.field === col.key && (
-                                  <ChevronDown className="h-3 w-3 text-muted-foreground flex-shrink-0 ml-1" />
-                                )}
+              {/* Содержимое карточки */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {columns.map((col, colIndex) => {
+                  const isSelected = isCellSelected(campaign.id, col.key);
+                  const isEmpty = !campaign[col.key] || String(campaign[col.key]).trim() === '';
+                  
+                  return (
+                    <div 
+                      key={col.key}
+                      className={`relative group ${
+                        isSelected ? 'bg-table-cell-selected rounded-md p-2 -m-2' : ''
+                      }`}
+                      onMouseDown={(e) => handleMouseDown(campaign.id, col.key, rowIndex, colIndex, e)}
+                      onMouseEnter={() => handleMouseEnter(campaign.id, col.key, rowIndex, colIndex)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        !isDragging && handleCellClick(campaign.id, col.key, rowIndex, colIndex, e);
+                      }}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        handleCellDoubleClick(campaign.id, col.key, e);
+                      }}
+                    >
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                          {col.label}
+                        </label>
+                        
+                        {col.key === 'campaignUrl' ? (
+                          <CampaignLinkStatus campaignId={campaign.id} />
+                        ) : activeDropdown?.rowId === campaign.id && activeDropdown?.field === col.key ? (
+                          <Popover open={true} onOpenChange={(open) => !open && setActiveDropdown(null)}>
+                            <PopoverTrigger asChild>
+                              <div className="w-full h-full cursor-pointer"></div>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-48 p-1 bg-popover border border-border shadow-lg z-50" align="start">
+                              <div className="max-h-48 overflow-y-auto">
+                                {getFieldOptions(col.key).map((option) => (
+                                  <div
+                                    key={option}
+                                    className="px-3 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors"
+                                    onClick={() => handleDropdownSelect(option)}
+                                  >
+                                    {option}
+                                  </div>
+                                ))}
                               </div>
-                           )}
-                      </td>
-                    );
-                  })}
+                            </PopoverContent>
+                          </Popover>
+                        ) : (
+                          <div className={`relative p-2 rounded-md border transition-colors cursor-cell ${
+                            isEmpty 
+                              ? 'bg-table-empty-cell border-red-200 dark:border-red-800' 
+                              : 'bg-muted/30 border-border hover:border-primary/30'
+                          }`}>
+                            <div className="flex items-center justify-between">
+                              <span className={`text-sm ${isEmpty ? 'text-muted-foreground italic' : 'text-foreground'}`}>
+                                {campaign[col.key] ? String(campaign[col.key]) : 'Не заполнено'}
+                              </span>
+                              {!isLaunched && editableFields.includes(col.key) && activeDropdown?.rowId === campaign.id && activeDropdown?.field === col.key && (
+                                <ChevronDown className="h-3 w-3 text-muted-foreground flex-shrink-0 ml-1" />
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
 
-                  {/* Действия */}
-                   {!isLaunched && (
-                     <td className="h-11 border-b border-table-border px-3">
-                       <div className="flex items-center justify-center gap-1 h-full">
-                         <Button
-                           size="sm"
-                           variant="ghost"
-                           onClick={() => handleRowEdit(campaign)}
-                           className="h-7 w-7 p-0 hover:bg-primary/10 hover:text-primary transition-colors"
-                         >
-                           <Edit className="h-3 w-3" />
-                         </Button>
-                         <Button
-                           size="sm"
-                           variant="ghost"
-                           onClick={() => onDeleteCampaign(campaign.id)}
-                           className="h-7 w-7 p-0 hover:bg-destructive/10 hover:text-destructive transition-colors"
-                         >
-                           <Trash2 className="h-3 w-3" />
-                         </Button>
-                       </div>
-                     </td>
-                   )}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              {/* Действия в правом верхнем углу */}
+              {!isLaunched && (
+                <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRowEdit(campaign);
+                    }}
+                    className="h-7 w-7 p-0 hover:bg-primary/10 hover:text-primary transition-colors"
+                  >
+                    <Edit className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteCampaign(campaign.id);
+                    }}
+                    className="h-7 w-7 p-0 hover:bg-destructive/10 hover:text-destructive transition-colors"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {campaigns.length === 0 && (
