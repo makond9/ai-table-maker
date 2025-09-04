@@ -3,6 +3,7 @@ import { Campaign } from '@/types/campaign';
 import { GoogleSheetsTable } from '@/components/GoogleSheetsTable';
 import { ChatInterface } from '@/components/ChatInterface';
 import { AIThinkingAnimation } from '@/components/AIThinkingAnimation';
+import { TypingTableAnimation } from '@/components/TypingTableAnimation';
 import { parseMessage, generateAIResponse, parseBulkUpdateCommand, generateBulkUpdateResponse } from '@/utils/aiParser';
 import { aiService } from '@/services/aiService';
 import { toast } from 'sonner';
@@ -15,6 +16,7 @@ const Index = () => {
   const [isLaunched, setIsLaunched] = useState(false);
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
   const [showThinking, setShowThinking] = useState(false);
+  const [showTypingAnimation, setShowTypingAnimation] = useState(false);
   const { toast } = useToast();
 
   // Проверяем, все ли параметры заданы
@@ -40,6 +42,7 @@ const Index = () => {
           ...campaignData
         })) as Campaign[];
         
+        setShowTypingAnimation(true);
         setCampaigns(prev => {
           const updated = [...prev, ...newCampaigns];
           if (checkAllParametersSet(updated)) {
@@ -120,6 +123,7 @@ const Index = () => {
         createdAt: new Date()
       }));
 
+      setShowTypingAnimation(true);
       setCampaigns(prev => {
         const updated = [...prev, ...newCampaigns];
         if (checkAllParametersSet(updated)) {
@@ -242,12 +246,22 @@ const Index = () => {
                     Всего кампаний: {campaigns.length}
                   </p>
                 </div>
-                <GoogleSheetsTable
-                  campaigns={campaigns}
-                  onUpdateCampaign={handleUpdateCampaign}
-                  onDeleteCampaign={handleDeleteCampaign}
-                  isLaunched={isLaunched}
-                />
+                {showTypingAnimation ? (
+                  <TypingTableAnimation
+                    campaigns={campaigns}
+                    onUpdateCampaign={handleUpdateCampaign}
+                    onDeleteCampaign={handleDeleteCampaign}
+                    isLaunched={isLaunched}
+                    onComplete={() => setShowTypingAnimation(false)}
+                  />
+                ) : (
+                  <GoogleSheetsTable
+                    campaigns={campaigns}
+                    onUpdateCampaign={handleUpdateCampaign}
+                    onDeleteCampaign={handleDeleteCampaign}
+                    isLaunched={isLaunched}
+                  />
+                )}
                 <div className="mt-4 flex justify-start">
                   <Button
                     onClick={handleAddNewRow}
@@ -280,11 +294,9 @@ const Index = () => {
             onAIParseMessage={handleAIParseMessage}
             needsConfirmation={needsConfirmation}
             onConfirmLaunch={handleConfirmLaunch}
+            showThinking={showThinking}
+            onThinkingComplete={handleThinkingComplete}
           />
-          
-          {showThinking && (
-            <AIThinkingAnimation onComplete={handleThinkingComplete} />
-          )}
             </div>
           </div>
         </div>

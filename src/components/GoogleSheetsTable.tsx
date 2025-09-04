@@ -470,8 +470,8 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                             <CampaignLinkStatus campaignId={campaign.id} />
                           ) : (
                              <span className="text-foreground truncate">
-                               {campaign[col.key] ? String(campaign[col.key]) : 'Нужно уточнить'}
-                             </span>
+                                {campaign[col.key] ? String(campaign[col.key]) : ''}
+                              </span>
                           )}
                       </td>
                     );
