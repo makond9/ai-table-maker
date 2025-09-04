@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 const Admin = () => {
-  const [campaignNameTemplate, setCampaignNameTemplate] = useState('название_оффера_страна_дата_имя_покупателя');
+  const [campaignNameTemplate, setCampaignNameTemplate] = useState('название оффера страна дата имя покупателя');
   const {
     toast
   } = useToast();
@@ -16,13 +16,13 @@ const Admin = () => {
     macro: 'дата',
     description: 'Текущая дата'
   }, {
-    macro: 'имя_покупателя',
+    macro: 'имя покупателя',
     description: 'Имя покупателя'
   }, {
-    macro: 'название_оффера',
+    macro: 'название оффера',
     description: 'Название оффера'
   }, {
-    macro: 'трафиковый_аккаунт',
+    macro: 'трафиковый аккаунт',
     description: 'Трафиковый аккаунт'
   }, {
     macro: 'страна',
@@ -34,7 +34,7 @@ const Admin = () => {
     macro: 'пиксель',
     description: 'Пиксель'
   }, {
-    macro: 'ид_кампании',
+    macro: 'ид кампании',
     description: 'ID кампании'
   }];
   const handleSave = () => {
@@ -46,7 +46,7 @@ const Admin = () => {
   const insertMacro = (macro: string) => {
     setCampaignNameTemplate(prev => prev + macro);
   };
-  const previewExample = campaignNameTemplate.replace('дата', '2024-01-15').replace('имя_покупателя', 'alex_v').replace('название_оффера', 'Финансы').replace('трафиковый_аккаунт', 'Мета').replace('страна', 'Россия').replace('рк', 'РК-001').replace('пиксель', 'Facebook Pixel').replace('ид_кампании', 'abc123');
+  const previewExample = campaignNameTemplate.replace('дата', '2024-01-15').replace('имя покупателя', 'alex_v').replace('название оффера', 'Финансы').replace('трафиковый аккаунт', 'Мета').replace('страна', 'Россия').replace('рк', 'РК-001').replace('пиксель', 'Facebook Pixel').replace('ид кампании', 'abc123');
   return <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
         <header className="mb-8">
