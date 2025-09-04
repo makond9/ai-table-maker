@@ -511,7 +511,11 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                               </PopoverContent>
                             </Popover>
                            ) : (
-                              <div className="flex items-center justify-between w-full">
+                              <div className={`flex items-center justify-between w-full ${
+                                !campaign[col.key] || String(campaign[col.key]).trim() === '' 
+                                  ? 'bg-table-empty-cell' 
+                                  : ''
+                              }`}>
                                 <span className="text-foreground truncate">
                                    {campaign[col.key] ? String(campaign[col.key]) : ''}
                                 </span>

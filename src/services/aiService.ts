@@ -165,8 +165,8 @@ export class AIService {
       return {
         campaigns,
         message: campaigns.length === 1 
-          ? `Создана кампания: ${campaigns[0].trafficAccount} - ${campaigns[0].offer} - ${campaigns[0].country}`
-          : `Создано ${campaigns.length} кампаний`
+          ? `Компания добавлена - проверьте параметры: ${campaigns[0].trafficAccount} - ${campaigns[0].offer} - ${campaigns[0].country}`
+          : `Компании добавлены - проверьте параметры (${campaigns.length} шт.)`
       };
     }
 
