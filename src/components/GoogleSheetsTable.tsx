@@ -3,7 +3,7 @@ import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES, RK_OPTIONS, PIXEL_OPTION
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Trash2, Edit, Copy } from 'lucide-react';
+import { Trash2, Edit, Copy, ChevronDown } from 'lucide-react';
 import { CellEditDialog } from './CellEditDialog';
 import { RowEditDialog } from './RowEditDialog';
 import { CampaignLinkStatus } from './CampaignLinkStatus';
@@ -113,6 +113,11 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
     // Предотвращаем выделение текста
     if (window.getSelection) {
       window.getSelection()?.removeAllRanges();
+    }
+    
+    // Показать иконку выпадающего списка для редактируемых полей
+    if (!isLaunched && editableFields.includes(field)) {
+      setActiveDropdown({ rowId, field });
     }
     
     if (event.ctrlKey || event.metaKey) {
@@ -505,11 +510,16 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                                 </div>
                               </PopoverContent>
                             </Popover>
-                          ) : (
-                             <span className="text-foreground truncate">
-                                {campaign[col.key] ? String(campaign[col.key]) : ''}
-                              </span>
-                          )}
+                           ) : (
+                              <div className="flex items-center justify-between w-full">
+                                <span className="text-foreground truncate">
+                                   {campaign[col.key] ? String(campaign[col.key]) : ''}
+                                </span>
+                                {!isLaunched && editableFields.includes(col.key) && activeDropdown?.rowId === campaign.id && activeDropdown?.field === col.key && (
+                                  <ChevronDown className="h-3 w-3 text-muted-foreground flex-shrink-0 ml-1" />
+                                )}
+                              </div>
+                           )}
                       </td>
                     );
                   })}
