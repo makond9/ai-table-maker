@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES, RK_OPTIONS, PIXEL_OPTIONS } from '@/types/campaign';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Trash2, Edit, Copy } from 'lucide-react';
 import { CellEditDialog } from './CellEditDialog';
 import { RowEditDialog } from './RowEditDialog';
@@ -31,6 +32,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
   const [dragStart, setDragStart] = useState<{ row: number; col: number } | null>(null);
   const [rowDragStart, setRowDragStart] = useState<number | null>(null);
   const [isResizing, setIsResizing] = useState<string | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<{rowId: string, field: keyof Campaign} | null>(null);
 
   const editableFields: (keyof Campaign)[] = ['trafficAccount', 'offer', 'country', 'rk', 'pixel'];
   
@@ -320,6 +322,21 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
     document.addEventListener('mouseup', handleMouseUpResize);
   };
 
+  const handleCellDoubleClick = (rowId: string, field: keyof Campaign, e: React.MouseEvent) => {
+    if (!isLaunched && editableFields.includes(field)) {
+      e.preventDefault();
+      e.stopPropagation();
+      setActiveDropdown({ rowId, field });
+    }
+  };
+
+  const handleDropdownSelect = (value: string) => {
+    if (activeDropdown) {
+      onUpdateCampaign(activeDropdown.rowId, { [activeDropdown.field]: value });
+      setActiveDropdown(null);
+    }
+  };
+
   const columns = isLaunched 
     ? [
         { key: 'campaignName' as keyof Campaign, label: 'Название кампании', editable: false },
@@ -465,9 +482,29 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
                           onMouseDown={(e) => handleMouseDown(campaign.id, col.key, rowIndex, colIndex, e)}
                           onMouseEnter={() => handleMouseEnter(campaign.id, col.key, rowIndex, colIndex)}
                           onClick={(e) => !isDragging && handleCellClick(campaign.id, col.key, rowIndex, colIndex, e)}
+                          onDoubleClick={(e) => handleCellDoubleClick(campaign.id, col.key, e)}
                         >
                           {col.key === 'campaignUrl' ? (
                             <CampaignLinkStatus campaignId={campaign.id} />
+                          ) : activeDropdown?.rowId === campaign.id && activeDropdown?.field === col.key ? (
+                            <Popover open={true} onOpenChange={(open) => !open && setActiveDropdown(null)}>
+                              <PopoverTrigger asChild>
+                                <div className="w-full h-full"></div>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-48 p-1 bg-popover border border-border shadow-lg z-50" align="start">
+                                <div className="max-h-48 overflow-y-auto">
+                                  {getFieldOptions(col.key).map((option) => (
+                                    <div
+                                      key={option}
+                                      className="px-3 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors"
+                                      onClick={() => handleDropdownSelect(option)}
+                                    >
+                                      {option}
+                                    </div>
+                                  ))}
+                                </div>
+                              </PopoverContent>
+                            </Popover>
                           ) : (
                              <span className="text-foreground truncate">
                                 {campaign[col.key] ? String(campaign[col.key]) : ''}
