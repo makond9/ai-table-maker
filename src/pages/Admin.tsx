@@ -81,8 +81,8 @@ const Admin = () => {
 
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <Info className="h-4 w-4 text-muted-foreground" />
-                  <Label className="text-sm font-medium">Доступные макросы:</Label>
+                  
+                  
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                   {availableMacros.map(({
