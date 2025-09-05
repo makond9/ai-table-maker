@@ -21,11 +21,9 @@ const Index = () => {
   // Проверяем, все ли параметры заданы
   const checkAllParametersSet = (campaigns: Campaign[]) => {
     return campaigns.every(campaign => 
-      campaign.trafficAccount && 
+      campaign.tonicAccount && 
       campaign.offer && 
-      campaign.country && 
-      campaign.rk && 
-      campaign.pixel
+      campaign.country
     );
   };
 
@@ -113,11 +111,9 @@ const Index = () => {
     if (parsedCampaigns.length > 0) {
       const newCampaigns: Campaign[] = parsedCampaigns.map(partial => ({
         id: Date.now().toString() + Math.random(),
-        trafficAccount: partial.trafficAccount || undefined,
+        tonicAccount: partial.tonicAccount || undefined,
         offer: partial.offer || undefined,
         country: partial.country || undefined,
-        rk: partial.rk || undefined,
-        pixel: partial.pixel || undefined,
         createdAt: new Date()
       }));
 
@@ -164,11 +160,9 @@ const Index = () => {
   const handleAddNewRow = () => {
     const newCampaign: Campaign = {
       id: crypto.randomUUID(),
-      trafficAccount: 'Мета',
+      tonicAccount: 'Мета',
       offer: '',
       country: '',
-      rk: '',
-      pixel: '',
       createdAt: new Date()
     };
     
@@ -187,7 +181,7 @@ const Index = () => {
   const handleThinkingComplete = () => {
     const launchedCampaigns = campaigns.map(campaign => ({
       ...campaign,
-      campaignName: `${campaign.trafficAccount}_${campaign.offer}_${campaign.country}_${campaign.rk}`,
+      campaignName: `${campaign.tonicAccount}_${campaign.offer}_${campaign.country}`,
       campaignUrl: `https://clickfeler.com/campaign/${campaign.id}`
     }));
     

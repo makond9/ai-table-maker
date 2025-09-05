@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES, RK_OPTIONS, PIXEL_OPTIONS } from '@/types/campaign';
+import { Campaign, TONIC_ACCOUNTS, OFFERS, COUNTRIES } from '@/types/campaign';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -64,16 +64,12 @@ export function CellEditDialog({ open, onOpenChange, selectedCells, campaigns, o
 
   const getFieldOptions = (field: keyof Campaign) => {
     switch (field) {
-      case 'trafficAccount':
-        return TRAFFIC_ACCOUNTS;
+      case 'tonicAccount':
+        return TONIC_ACCOUNTS;
       case 'offer':
         return OFFERS;
       case 'country':
         return COUNTRIES;
-      case 'rk':
-        return RK_OPTIONS;
-      case 'pixel':
-        return PIXEL_OPTIONS;
       default:
         return [];
     }
@@ -81,11 +77,9 @@ export function CellEditDialog({ open, onOpenChange, selectedCells, campaigns, o
 
   const getFieldLabel = (field: keyof Campaign) => {
     const labels = {
-      trafficAccount: 'Трафик-источник',
+      tonicAccount: 'Тоник аккаунт',
       offer: 'Оффер',
-      country: 'Страна',
-      rk: 'РК',
-      pixel: 'Пиксель'
+      country: 'Страна'
     };
     return labels[field] || field;
   };

@@ -1,4 +1,4 @@
-import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES, RK_OPTIONS, PIXEL_OPTIONS } from '@/types/campaign';
+import { Campaign, TONIC_ACCOUNTS, OFFERS, COUNTRIES } from '@/types/campaign';
 
 export interface AIParsingResult {
   campaigns?: Partial<Campaign>[];
@@ -28,11 +28,9 @@ export class AIService {
     const systemPrompt = `Ты - эксперт по анализу команд для создания рекламных кампаний. 
 
 Доступные параметры:
-- Трафик аккаунты: ${TRAFFIC_ACCOUNTS.join(', ')}
+- Тоник аккаунты: ${TONIC_ACCOUNTS.join(', ')}
 - Офферы: ${OFFERS.join(', ')}
 - Страны: ${COUNTRIES.join(', ')}
-- РК опции: ${RK_OPTIONS.join(', ')}
-- Пиксели: ${PIXEL_OPTIONS.join(', ')}
 
 Твоя задача - распознать из текста пользователя одно из действий:
 1. Создание новых кампаний (с комбинациями параметров)
@@ -43,11 +41,9 @@ export class AIService {
   "action": "create",
   "campaigns": [
     {
-      "trafficAccount": "...",
+      "tonicAccount": "...",
       "offer": "...",
-      "country": "...",
-      "rk": "РК-001",
-      "pixel": "Facebook Pixel"
+      "country": "..."
     }
   ],
   "message": "Создано X кампаний: ..."
@@ -56,7 +52,7 @@ export class AIService {
 Для массового изменения верни:
 {
   "action": "bulk_update", 
-  "field": "rk|pixel|trafficAccount|offer|country",
+  "field": "tonicAccount|offer|country",
   "value": "новое значение",
   "message": "Изменил ... на ..."
 }
@@ -165,13 +161,13 @@ export class AIService {
       return {
         campaigns,
         message: campaigns.length === 1 
-          ? `Компания добавлена - проверьте параметры: ${campaigns[0].trafficAccount} - ${campaigns[0].offer} - ${campaigns[0].country}`
+          ? `Компания добавлена - проверьте параметры: ${campaigns[0].tonicAccount} - ${campaigns[0].offer} - ${campaigns[0].country}`
           : `Компании добавлены - проверьте параметры (${campaigns.length} шт.)`
       };
     }
 
     return {
-      message: "Не удалось понять запрос. Попробуйте указать трафик-источник, оффер и страну."
+      message: "Не удалось понять запрос. Попробуйте указать тоник аккаунт, оффер и страну."
     };
   }
 
@@ -179,12 +175,12 @@ export class AIService {
     const lowerMessage = message.toLowerCase();
     const results: Partial<Campaign>[] = [];
 
-    // Определяем трафик аккаунт
-    let trafficAccount: Campaign['trafficAccount'] | undefined;
+    // Определяем тоник аккаунт
+    let tonicAccount: Campaign['tonicAccount'] | undefined;
     if (lowerMessage.includes('мета') || lowerMessage.includes('facebook') || lowerMessage.includes('fb')) {
-      trafficAccount = 'Мета';
+      tonicAccount = 'Мета';
     } else if (lowerMessage.includes('тикток') || lowerMessage.includes('tiktok')) {
-      trafficAccount = 'ТикТок';
+      tonicAccount = 'ТикТок';
     }
 
     // Определяем офферы
@@ -211,17 +207,15 @@ export class AIService {
     // Устанавливаем значения по умолчанию
     if (detectedOffers.length === 0) detectedOffers = ['Финансы'];
     if (detectedCountries.length === 0) detectedCountries = ['Россия'];
-    if (!trafficAccount) trafficAccount = 'Мета';
+    if (!tonicAccount) tonicAccount = 'Мета';
 
     // Создаем комбинации
     detectedOffers.forEach(offer => {
       detectedCountries.forEach(country => {
         results.push({
-          trafficAccount,
+          tonicAccount,
           offer,
-          country,
-          rk: RK_OPTIONS[0],
-          pixel: PIXEL_OPTIONS[0]
+          country
         });
       });
     });
@@ -232,19 +226,11 @@ export class AIService {
   private parseBulkUpdateLocal(message: string): { field: keyof Campaign; value: string } | null {
     const lowerMessage = message.toLowerCase();
     
-    if (lowerMessage.includes('рк') && lowerMessage.includes('на')) {
-      const match = message.match(/рк на (РК-\d{3})/i);
-      if (match && RK_OPTIONS.includes(match[1] as any)) {
-        return { field: 'rk', value: match[1] };
-      }
-    }
-
-    if (lowerMessage.includes('пиксель') && lowerMessage.includes('на')) {
-      const pixelMatch = PIXEL_OPTIONS.find(pixel => 
-        lowerMessage.includes(pixel.toLowerCase())
-      );
-      if (pixelMatch) {
-        return { field: 'pixel', value: pixelMatch };
+    if (lowerMessage.includes('тоник') && lowerMessage.includes('на')) {
+      if (lowerMessage.includes('мета')) {
+        return { field: 'tonicAccount', value: 'Мета' };
+      } else if (lowerMessage.includes('тикток')) {
+        return { field: 'tonicAccount', value: 'ТикТок' };
       }
     }
 
@@ -252,10 +238,8 @@ export class AIService {
   }
 
   private getFieldName(field: keyof Campaign): string {
-    const fieldNames = {
-      'rk': 'РК',
-      'pixel': 'пиксель',
-      'trafficAccount': 'трафик-аккаунт',
+    const fieldNames: Record<string, string> = {
+      'tonicAccount': 'тоник аккаунт',
       'offer': 'оффер',
       'country': 'страну'
     };

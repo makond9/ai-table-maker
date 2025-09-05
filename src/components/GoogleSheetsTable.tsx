@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES, RK_OPTIONS, PIXEL_OPTIONS } from '@/types/campaign';
+import { Campaign, TONIC_ACCOUNTS, OFFERS, COUNTRIES } from '@/types/campaign';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -34,7 +34,7 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
   const [isResizing, setIsResizing] = useState<string | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<{rowId: string, field: keyof Campaign} | null>(null);
 
-  const editableFields: (keyof Campaign)[] = ['trafficAccount', 'offer', 'country', 'rk', 'pixel'];
+  const editableFields: (keyof Campaign)[] = ['tonicAccount', 'offer', 'country'];
   
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -83,16 +83,12 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
 
   const getFieldOptions = (field: keyof Campaign) => {
     switch (field) {
-      case 'trafficAccount':
-        return TRAFFIC_ACCOUNTS;
+      case 'tonicAccount':
+        return TONIC_ACCOUNTS;
       case 'offer':
         return OFFERS;
       case 'country':
         return COUNTRIES;
-      case 'rk':
-        return RK_OPTIONS;
-      case 'pixel':
-        return PIXEL_OPTIONS;
       default:
         return [];
     }
@@ -348,11 +344,9 @@ export function GoogleSheetsTable({ campaigns, onUpdateCampaign, onDeleteCampaig
         { key: 'campaignUrl' as keyof Campaign, label: 'Ссылка в КликФелер', editable: false }
       ]
     : [
-        { key: 'trafficAccount' as keyof Campaign, label: 'Трафик-источник', editable: true },
+        { key: 'tonicAccount' as keyof Campaign, label: 'Тоник аккаунт', editable: true },
         { key: 'offer' as keyof Campaign, label: 'Оффер', editable: true },
         { key: 'country' as keyof Campaign, label: 'Страна', editable: true },
-        { key: 'rk' as keyof Campaign, label: 'РК', editable: true },
-        { key: 'pixel' as keyof Campaign, label: 'Пиксель', editable: true }
       ];
 
   return (

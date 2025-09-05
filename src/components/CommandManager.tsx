@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Badge } from './ui/badge';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
-import { TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES } from '@/types/campaign';
+import { TONIC_ACCOUNTS, OFFERS, COUNTRIES } from '@/types/campaign';
 
 export interface CommandPattern {
   id: string;
@@ -24,13 +24,13 @@ export const CommandManager: React.FC<CommandManagerProps> = ({ isOpen, onClose 
   const [patterns, setPatterns] = useState<CommandPattern[]>([
     {
       id: '1',
-      field: 'trafficAccount',
+      field: 'tonicAccount',
       keywords: ['мета', 'facebook', 'fb'],
       values: ['Мета']
     },
     {
       id: '2',
-      field: 'trafficAccount',
+      field: 'tonicAccount',
       keywords: ['тикток', 'tiktok'],
       values: ['ТикТок']
     },
@@ -117,7 +117,7 @@ export const CommandManager: React.FC<CommandManagerProps> = ({ isOpen, onClose 
 
   const getFieldLabel = (field: string) => {
     switch (field) {
-      case 'trafficAccount': return 'Трафик-аккаунт';
+      case 'tonicAccount': return 'Тоник аккаунт';
       case 'offer': return 'Оффер';
       case 'country': return 'Страна';
       default: return field;
@@ -126,7 +126,7 @@ export const CommandManager: React.FC<CommandManagerProps> = ({ isOpen, onClose 
 
   const getAvailableValues = (field: string) => {
     switch (field) {
-      case 'trafficAccount': return TRAFFIC_ACCOUNTS;
+      case 'tonicAccount': return TONIC_ACCOUNTS;
       case 'offer': return OFFERS;
       case 'country': return COUNTRIES;
       default: return [];

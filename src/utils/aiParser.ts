@@ -1,4 +1,4 @@
-import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES, RK_OPTIONS, PIXEL_OPTIONS } from '@/types/campaign';
+import { Campaign, TONIC_ACCOUNTS, OFFERS, COUNTRIES } from '@/types/campaign';
 
 export interface BulkUpdateCommand {
   field: keyof Campaign;
@@ -9,12 +9,12 @@ export function parseMessage(message: string): Partial<Campaign>[] {
   const lowerMessage = message.toLowerCase();
   const results: Partial<Campaign>[] = [];
 
-  // Определяем трафик аккаунт
-  let trafficAccount: Campaign['trafficAccount'] | undefined;
+  // Определяем тоник аккаунт
+  let tonicAccount: Campaign['tonicAccount'] | undefined;
   if (lowerMessage.includes('мета') || lowerMessage.includes('facebook') || lowerMessage.includes('fb')) {
-    trafficAccount = 'Мета';
+    tonicAccount = 'Мета';
   } else if (lowerMessage.includes('тикток') || lowerMessage.includes('tiktok')) {
-    trafficAccount = 'ТикТок';
+    tonicAccount = 'ТикТок';
   }
 
   // Определяем оффер
@@ -88,11 +88,9 @@ export function parseMessage(message: string): Partial<Campaign>[] {
   detectedOffers.forEach(offer => {
     detectedCountries.forEach(country => {
       results.push({
-        trafficAccount,
+        tonicAccount,
         offer,
-        country,
-        rk: undefined,
-        pixel: undefined
+        country
       });
     });
   });
@@ -102,7 +100,7 @@ export function parseMessage(message: string): Partial<Campaign>[] {
 
 export function generateAIResponse(campaigns: Partial<Campaign>[]): string {
   if (campaigns.length === 0) {
-    return "Не удалось понять запрос. Попробуйте указать трафик-источник (Мета/ТикТок), оффер и страну.";
+    return "Не удалось понять запрос. Попробуйте указать тоник аккаунт (Мета/ТикТок), оффер и страну.";
   }
 
   return `Создано ${campaigns.length} кампаний. ${generateMissingFieldsMessage(campaigns)}`;
@@ -115,9 +113,9 @@ export function generateMissingFieldsMessage(campaigns: Partial<Campaign>[]): st
   campaigns.forEach((campaign, index) => {
     const missing: string[] = [];
     
-    if (!campaign.trafficAccount) {
-      missing.push('трафик-аккаунт');
-      allMissingFields.add('трафик-аккаунт');
+    if (!campaign.tonicAccount) {
+      missing.push('тоник аккаунт');
+      allMissingFields.add('тоник аккаунт');
     }
     if (!campaign.offer) {
       missing.push('оффер');
@@ -126,14 +124,6 @@ export function generateMissingFieldsMessage(campaigns: Partial<Campaign>[]): st
     if (!campaign.country) {
       missing.push('страну');
       allMissingFields.add('страну');
-    }
-    if (!campaign.rk) {
-      missing.push('РК');
-      allMissingFields.add('РК');
-    }
-    if (!campaign.pixel) {
-      missing.push('пиксель');
-      allMissingFields.add('пиксель');
     }
 
     if (missing.length > 0) {
@@ -190,29 +180,12 @@ export function parseBulkUpdateCommand(message: string): BulkUpdateCommand | nul
     return null;
   }
 
-  // Определяем поле для изменения
-  if (lowerMessage.includes('рк') && lowerMessage.includes('на')) {
-    const match = message.match(/рк на (РК-\d{3})/i);
-    if (match && RK_OPTIONS.includes(match[1] as any)) {
-      return { field: 'rk', value: match[1] };
-    }
-  }
-
-  if (lowerMessage.includes('пиксель') && lowerMessage.includes('на')) {
-    const pixelMatch = PIXEL_OPTIONS.find(pixel => 
-      lowerMessage.includes(pixel.toLowerCase())
-    );
-    if (pixelMatch) {
-      return { field: 'pixel', value: pixelMatch };
-    }
-  }
-
-  if ((lowerMessage.includes('трафик') || lowerMessage.includes('аккаунт')) && lowerMessage.includes('на')) {
+  if ((lowerMessage.includes('тоник') || lowerMessage.includes('аккаунт')) && lowerMessage.includes('на')) {
     if (lowerMessage.includes('мета') || lowerMessage.includes('facebook')) {
-      return { field: 'trafficAccount', value: 'Мета' };
+      return { field: 'tonicAccount', value: 'Мета' };
     }
     if (lowerMessage.includes('тикток') || lowerMessage.includes('tiktok')) {
-      return { field: 'trafficAccount', value: 'ТикТок' };
+      return { field: 'tonicAccount', value: 'ТикТок' };
     }
   }
 
@@ -247,9 +220,7 @@ export function parseBulkUpdateCommand(message: string): BulkUpdateCommand | nul
 
 export function generateBulkUpdateResponse(command: BulkUpdateCommand, count: number): string {
   const fieldNames = {
-    'rk': 'РК',
-    'pixel': 'пиксель',
-    'trafficAccount': 'трафик-аккаунт',
+    'tonicAccount': 'тоник аккаунт',
     'offer': 'оффер',
     'country': 'страну'
   };

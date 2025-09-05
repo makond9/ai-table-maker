@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Campaign, TRAFFIC_ACCOUNTS, OFFERS, COUNTRIES, RK_OPTIONS, PIXEL_OPTIONS } from '@/types/campaign';
+import { Campaign, TONIC_ACCOUNTS, OFFERS, COUNTRIES } from '@/types/campaign';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -19,11 +19,9 @@ export function RowEditDialog({ open, onOpenChange, campaign, onSave }: RowEditD
   useEffect(() => {
     if (campaign) {
       setFormData({
-        trafficAccount: campaign.trafficAccount,
+        tonicAccount: campaign.tonicAccount,
         offer: campaign.offer,
-        country: campaign.country,
-        rk: campaign.rk,
-        pixel: campaign.pixel
+        country: campaign.country
       });
     }
   }, [campaign]);
@@ -50,16 +48,16 @@ export function RowEditDialog({ open, onOpenChange, campaign, onSave }: RowEditD
         
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="trafficAccount">Трафик-источник</Label>
+            <Label htmlFor="tonicAccount">Тоник аккаунт</Label>
             <Select
-              value={formData.trafficAccount}
-              onValueChange={(value) => handleFieldChange('trafficAccount', value)}
+              value={formData.tonicAccount}
+              onValueChange={(value) => handleFieldChange('tonicAccount', value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Выберите трафик аккаунт" />
+                <SelectValue placeholder="Выберите тоник аккаунт" />
               </SelectTrigger>
               <SelectContent>
-                {TRAFFIC_ACCOUNTS.map((account) => (
+                {TONIC_ACCOUNTS.map((account) => (
                   <SelectItem key={account} value={account}>
                     {account}
                   </SelectItem>
@@ -100,44 +98,6 @@ export function RowEditDialog({ open, onOpenChange, campaign, onSave }: RowEditD
                 {COUNTRIES.map((country) => (
                   <SelectItem key={country} value={country}>
                     {country}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="rk">РК</Label>
-            <Select
-              value={formData.rk}
-              onValueChange={(value) => handleFieldChange('rk', value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Выберите РК" />
-              </SelectTrigger>
-              <SelectContent>
-                {RK_OPTIONS.map((rk) => (
-                  <SelectItem key={rk} value={rk}>
-                    {rk}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="pixel">Пиксель</Label>
-            <Select
-              value={formData.pixel}
-              onValueChange={(value) => handleFieldChange('pixel', value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Выберите пиксель" />
-              </SelectTrigger>
-              <SelectContent>
-                {PIXEL_OPTIONS.map((pixel) => (
-                  <SelectItem key={pixel} value={pixel}>
-                    {pixel}
                   </SelectItem>
                 ))}
               </SelectContent>
